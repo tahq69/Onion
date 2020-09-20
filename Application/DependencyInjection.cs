@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application
+namespace Onion.Application
 {
     public static class DependencyInjection
     {
@@ -14,7 +13,6 @@ namespace Application
                 throw new ArgumentNullException(nameof(services));
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }

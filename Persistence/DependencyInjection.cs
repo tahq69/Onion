@@ -1,11 +1,12 @@
-﻿using Application.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.Context;
+using Onion.Application.Interfaces;
+using Onion.Data.Contexts;
+using Onion.Shared.Data;
 using System.Reflection;
 
-namespace Persistence
+namespace Onion.Data
 {
     public static class DependencyInjection
     {
@@ -21,6 +22,7 @@ namespace Persistence
                     }));
 
             services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>());
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }

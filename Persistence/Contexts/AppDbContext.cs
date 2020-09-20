@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Application.Interfaces;
+﻿using System.Threading.Tasks;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Onion.Application.Interfaces;
 
-namespace Persistence.Context
+namespace Onion.Data.Contexts
 {
     public class AppDbContext : DbContext, IAppDbContext
     {

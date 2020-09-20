@@ -1,9 +1,9 @@
-﻿using Application.Features.ProductFeatures.Commands;
-using Application.Features.ProductFeatures.Queries;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Onion.Application.Features.ProductFeatures.Commands;
+using Onion.Application.Features.ProductFeatures.Queries;
 
 namespace Onion.Web.Controllers
 {

@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Application.Interfaces;
 using Domain.Entities;
 using MediatR;
+using Onion.Application.Interfaces;
 
-namespace Application.Features.ProductFeatures.Queries
+namespace Onion.Application.Features.ProductFeatures.Queries
 {
     public class GetProductByIdQuery : IRequest<Product>
     {

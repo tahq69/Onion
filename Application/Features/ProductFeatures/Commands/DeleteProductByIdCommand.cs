@@ -1,10 +1,10 @@
-﻿using Application.Interfaces;
-using Domain.Entities;
+﻿using Domain.Entities;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Onion.Application.Interfaces;
 
-namespace Application.Features.ProductFeatures.Commands
+namespace Onion.Application.Features.ProductFeatures.Commands
 {
     public class DeleteProductByIdCommand : IRequest<long>
     {

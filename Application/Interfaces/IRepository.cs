@@ -1,16 +1,18 @@
-﻿using Domain.Common;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Domain.Common;
 
-namespace Application.Interfaces
+namespace Onion.Application.Interfaces
 {
-    public interface IRepository<T> where T : BaseEntity
+    public interface IRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<T> FirstOrDefault(long id);
+        Task<TEntity> FirstOrDefault(long id);
 
-        Task<long> Insert(T entity);
+        Task<long> Insert(TEntity entity);
 
-        Task<long> Update(T entity);
+        Task<long> Update(TEntity entity);
 
         Task<long> Delete(long id);
+
+        Task<long> Delete(TEntity entity);
     }
 }

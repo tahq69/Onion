@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Application.Exceptions
+namespace Onion.Application.Exceptions
 {
     public class RecordNotFoundException : Exception
     {

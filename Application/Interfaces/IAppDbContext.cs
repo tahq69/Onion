@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Application.Interfaces
+namespace Onion.Application.Interfaces
 {
     public interface IAppDbContext
     {
@@ -10,6 +12,9 @@ namespace Application.Interfaces
 
         Task<int> SaveChangesAsync();
 
-        DbSet<T> Set<T>() where T : class;
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
+        EntityEntry<TEntity> Entry<TEntity>([NotNull] TEntity entity)
+            where TEntity : class;
     }
 }
