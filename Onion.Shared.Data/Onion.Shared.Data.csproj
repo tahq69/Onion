@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
+    <PackageReference Include="MimeKit" Version="2.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Application\Onion.Application.csproj" />
   </ItemGroup>
 

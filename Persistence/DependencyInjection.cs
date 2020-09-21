@@ -10,7 +10,7 @@ namespace Onion.Data
 {
     public static class DependencyInjection
     {
-        public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+        public static void AddDataInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(

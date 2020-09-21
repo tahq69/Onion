@@ -18,5 +18,11 @@ namespace Onion.Data.Contexts
         {
             return await base.SaveChangesAsync();
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.HasDefaultSchema("app");
+        }
     }
 }

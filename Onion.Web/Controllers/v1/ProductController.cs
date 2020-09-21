@@ -1,11 +1,12 @@
-﻿using Domain.Entities;
+﻿using System.Threading.Tasks;
+using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Onion.Application.Features.ProductFeatures.Commands;
 using Onion.Application.Features.ProductFeatures.Queries;
 
-namespace Onion.Web.Controllers
+namespace Onion.Web.Controllers.v1
 {
     /// <summary>
     /// Product API 1.0 HTTP request controller.
@@ -20,6 +21,7 @@ namespace Onion.Web.Controllers
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<long>> Create(CreateProductCommand command)
@@ -53,6 +55,7 @@ namespace Onion.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -73,6 +76,7 @@ namespace Onion.Web.Controllers
         /// <param name="id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
+        [Authorize]
         [HttpPut("[action]")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

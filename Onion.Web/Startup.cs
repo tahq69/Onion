@@ -6,10 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
 using Onion.Application;
 using Onion.Data;
+using Onion.Identity;
+using Onion.Web.Middlewares;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Onion.Application.Interfaces;
+using Onion.Shared.Data;
+using Onion.Web.Services;
 
 namespace Onion.Web
 {
@@ -39,8 +45,13 @@ namespace Onion.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddApplication();
-            services.AddPersistence(Configuration);
+            services.AddHttpContextAccessor();
+            services.AddApplicationInfrastructure();
+            services.AddDataInfrastructure(Configuration);
+            services.AddIdentityInfrastructure(Configuration);
+            services.AddSharedInfrastructure(Configuration);
+
+            services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
 
             #region Swagger
 
@@ -55,6 +66,33 @@ namespace Onion.Web
                 {
                     Version = "v1",
                     Title = "Onion",
+                });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    Description = "Input your Bearer token in this format - Bearer {your token here} to access this API",
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer",
+                            },
+                            Scheme = "Bearer",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        }, new List<string>()
+                    },
                 });
             });
 
@@ -91,6 +129,9 @@ namespace Onion.Web
             }
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
