@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>
@@ -25,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Onion.Application.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Domain\Onion.Domain.csproj" />
     <ProjectReference Include="..\Onion.Identity\Onion.Identity.csproj" />
     <ProjectReference Include="..\Persistence\Onion.Data.csproj" />
   </ItemGroup>

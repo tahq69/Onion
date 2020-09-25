@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Domain.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -17,6 +16,7 @@ using Onion.Application.DTOs.Email;
 using Onion.Application.Enums;
 using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
+using Onion.Domain.Settings;
 using Onion.Identity.Helpers;
 using Onion.Identity.Models;
 

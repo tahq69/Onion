@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Domain.Entities;
 using MediatR;
 using Onion.Application.Interfaces;
+using Onion.Domain.Entities;
 
 namespace Onion.Application.Features.ProductFeatures.Queries
 {

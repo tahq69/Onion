@@ -1,6 +1,6 @@
-﻿using Domain.Common;
+﻿using Onion.Domain.Common;
 
-namespace Domain.Entities
+namespace Onion.Domain.Entities
 {
     public class Product : BaseEntity
     {

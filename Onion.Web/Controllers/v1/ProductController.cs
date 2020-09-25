@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Onion.Application.Features.ProductFeatures.Commands;
 using Onion.Application.Features.ProductFeatures.Queries;
+using Onion.Domain.Entities;
 
 namespace Onion.Web.Controllers.v1
 {

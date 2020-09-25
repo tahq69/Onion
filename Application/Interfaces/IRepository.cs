@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Domain.Common;
+using Onion.Domain.Common;
 
 namespace Onion.Application.Interfaces
 {

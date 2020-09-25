@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.Common
+namespace Onion.Domain.Common
 {
     public abstract class AuditableEntity : BaseEntity
     {

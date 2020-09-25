@@ -1,5 +1,4 @@
-﻿using Domain.Settings;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,6 +6,7 @@ using MimeKit;
 using Onion.Application.DTOs.Email;
 using Onion.Application.Interfaces;
 using System.Threading.Tasks;
+using Onion.Domain.Settings;
 
 namespace Onion.Shared.Data
 {

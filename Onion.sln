@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{86696022-B5A3-416B-81EB-0427FEA87069}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{2C29B07B-7C88-4E1A-A096-90CF7AD4ED88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Domain", "Domain\Onion.Domain.csproj", "{2C29B07B-7C88-4E1A-A096-90CF7AD4ED88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Data", "Persistence\Onion.Data.csproj", "{250B3F6E-5A42-4E93-8665-FFFD8E8D4D3B}"
 EndProject
@@ -24,13 +24,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{59B224AD-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0E705499-CE12-4A6E-8073-A211BC5EC73F}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onion.Shared.Data", "Onion.Shared.Data\Onion.Shared.Data.csproj", "{8E08EBC5-32E7-47E6-A2F1-7B7DD08C1DA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Shared.Data", "Onion.Shared.Data\Onion.Shared.Data.csproj", "{8E08EBC5-32E7-47E6-A2F1-7B7DD08C1DA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onion.Identity", "Onion.Identity\Onion.Identity.csproj", "{9F0A9C49-6D58-4577-8992-511B43DE8E2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Identity", "Onion.Identity\Onion.Identity.csproj", "{9F0A9C49-6D58-4577-8992-511B43DE8E2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

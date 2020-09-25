@@ -1,8 +1,8 @@
-﻿using Domain.Settings;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Onion.Application.Interfaces;
+using Onion.Domain.Settings;
 
 namespace Onion.Shared.Data
 {

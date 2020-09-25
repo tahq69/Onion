@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Onion.Application.Interfaces;
+using Onion.Domain.Entities;
 
 namespace Onion.Data.Contexts
 {

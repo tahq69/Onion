@@ -1,5 +1,4 @@
-﻿using Domain.Settings;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +13,7 @@ using Onion.Identity.Services;
 using System;
 using System.Reflection;
 using System.Text;
+using Onion.Domain.Settings;
 using IdentityDbContext = Onion.Identity.Contexts.IdentityDbContext;
 
 namespace Onion.Identity

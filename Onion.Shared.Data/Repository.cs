@@ -1,9 +1,9 @@
-﻿using Domain.Common;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
 using System;
 using System.Threading.Tasks;
+using Onion.Domain.Common;
 
 namespace Onion.Shared.Data
 {

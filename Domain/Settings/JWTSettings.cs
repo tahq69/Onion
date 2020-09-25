@@ -1,4 +1,4 @@
-﻿namespace Domain.Settings
+﻿namespace Onion.Domain.Settings
 {
     public class JWTSettings
     {

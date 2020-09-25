@@ -1,4 +1,4 @@
-﻿namespace Domain.Common
+﻿namespace Onion.Domain.Common
 {
     public abstract class BaseEntity
     {
