@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Onion.Application.csproj" />
-    <ProjectReference Include="..\Domain\Onion.Domain.csproj" />
+    <ProjectReference Include="..\Onion.Domain\Onion.Domain.csproj" />
     <ProjectReference Include="..\Onion.Identity\Onion.Identity.csproj" />
     <ProjectReference Include="..\Persistence\Onion.Data.csproj" />
   </ItemGroup>

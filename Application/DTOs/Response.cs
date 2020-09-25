@@ -24,7 +24,7 @@ namespace Onion.Application.DTOs
 
         public bool Succeeded { get; set; }
         public string Message { get; set; }
-        public Dictionary<string, string> Errors { get; set; }
+        public IDictionary<string, string> Errors { get; set; }
         public T Data { get; set; }
     }
 }
