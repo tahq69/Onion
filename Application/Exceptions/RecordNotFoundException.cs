@@ -3,17 +3,30 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Onion.Application.Exceptions
 {
-    public class RecordNotFoundException : Exception
+    /// <summary>
+    /// When record not found in DB/IO e.c. this exception will occur.
+    /// </summary>
+    /// <seealso cref="Onion.Application.Exceptions.BaseException" />
+    public class RecordNotFoundException : BaseException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecordNotFoundException"/> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public RecordNotFoundException(string message)
+            : base(message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecordNotFoundException"/> class.
+        /// </summary>
+        /// <param name="id">The record search identifier.</param>
+        /// <param name="recordType">Type of the record.</param>
         public RecordNotFoundException(long id, [AllowNull] Type recordType)
             : base(
                 $"Could not find record '{id}'" +
                 (recordType == null ? "." : $" of '{recordType.FullName}' type."))
-        {
-        }
-
-        public RecordNotFoundException(string message)
-            : base(message)
         {
         }
     }
