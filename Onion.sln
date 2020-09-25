@@ -13,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Domain", "Onion.Domain\Onion.Domain.csproj", "{2C29B07B-7C88-4E1A-A096-90CF7AD4ED88}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Data", "Persistence\Onion.Data.csproj", "{250B3F6E-5A42-4E93-8665-FFFD8E8D4D3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Data", "Onion.Data\Onion.Data.csproj", "{250B3F6E-5A42-4E93-8665-FFFD8E8D4D3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Application", "Application\Onion.Application.csproj", "{B34831D3-F860-4191-AF23-4494FA8298A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Application", "Onion.Application\Onion.Application.csproj", "{B34831D3-F860-4191-AF23-4494FA8298A7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{59B224AD-16A2-4B5D-A65B-88C6DDF209ED}"
 	ProjectSection(SolutionItems) = preProject

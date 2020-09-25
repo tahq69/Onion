@@ -10,6 +10,7 @@ namespace Onion.Application.Exceptions
     /// Model validation error details.
     /// </summary>
     /// <seealso cref="Onion.Application.Exceptions.BaseException" />
+    [Serializable]
     public class ValidationException : BaseException
     {
         /// <summary>

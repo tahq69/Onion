@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Onion.Application.csproj" />
+    <ProjectReference Include="..\Onion.Application\Onion.Application.csproj" />
   </ItemGroup>
 
 </Project>

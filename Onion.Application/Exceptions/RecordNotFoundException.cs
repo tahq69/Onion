@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace Onion.Application.Exceptions
 {
@@ -7,6 +8,7 @@ namespace Onion.Application.Exceptions
     /// When record not found in DB/IO e.c. this exception will occur.
     /// </summary>
     /// <seealso cref="Onion.Application.Exceptions.BaseException" />
+    [Serializable]
     public class RecordNotFoundException : BaseException
     {
         /// <summary>
@@ -27,6 +29,12 @@ namespace Onion.Application.Exceptions
             : base(
                 $"Could not find record '{id}'" +
                 (recordType == null ? "." : $" of '{recordType.FullName}' type."))
+        {
+        }
+
+        /// <inheritdoc cref="BaseException(SerializationInfo, StreamingContext)" />
+        protected RecordNotFoundException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

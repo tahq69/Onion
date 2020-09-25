@@ -8,6 +8,7 @@ namespace Onion.Application.Exceptions
     /// Account operation exception.
     /// </summary>
     /// <seealso cref="Onion.Application.Exceptions.BaseException" />
+    [Serializable]
     public class AccountException : BaseException
     {
         /// <summary>
