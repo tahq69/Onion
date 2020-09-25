@@ -37,7 +37,8 @@ namespace Onion.Application.Exceptions
         {
         }
 
-        public AccountException(SerializationInfo info, StreamingContext context)
+        /// <inheritdoc cref="BaseException(SerializationInfo, StreamingContext)" />
+        protected AccountException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             if (info == null) throw new ArgumentNullException(nameof(info));
@@ -61,7 +62,7 @@ namespace Onion.Application.Exceptions
         /// </summary>
         public string Account { get; protected set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="Exception(SerializationInfo, StreamingContext)"/>
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {

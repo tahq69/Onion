@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Onion.Application.Interfaces;
+using Onion.Infrastructure;
 using Onion.Shared.Data;
 using Onion.Web.Services;
 
@@ -46,10 +47,12 @@ namespace Onion.Web
         {
             services.AddControllers();
             services.AddHttpContextAccessor();
-            services.AddApplicationInfrastructure();
-            services.AddDataInfrastructure(Configuration);
+
+            services.AddInfrastructure(Configuration);
+            services.AddSharedDataInfrastructure(Configuration);
             services.AddIdentityInfrastructure(Configuration);
-            services.AddSharedInfrastructure(Configuration);
+            services.AddDataInfrastructure(Configuration);
+            services.AddApplicationInfrastructure();
 
             services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
 

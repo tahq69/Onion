@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
 using Onion.Application.Interfaces;
+using Onion.Identity.Features.PasswordFeatures.Commands;
 using System.Threading.Tasks;
 
 namespace Onion.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseApiController
     {
         private readonly IAccountService _accountService;
 
@@ -37,16 +40,38 @@ namespace Onion.Web.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
         {
-            await _accountService.ForgotPassword(model, Request.Headers["origin"]);
-            return Ok();
+            var result = await Mediator.Send(new ForgotPasswordCommand
+            {
+                Email = model.Email,
+                Origin = Request.Headers["origin"],
+            });
+
+            if (result.Succeeded)
+                return Ok(result);
+
+            return BadRequest(result);
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Response<string>>> ResetPassword(ResetPasswordRequest model)
         {
-            return Ok(await _accountService.ResetPassword(model));
+            var result = await Mediator.Send(new ResetPasswordCommand
+            {
+                Email = model.Email,
+                Password = model.Password,
+                Token = model.Token,
+            });
+
+            if (result.Succeeded)
+                return Ok(result);
+
+            return BadRequest(result);
         }
 
         private string GenerateIPAddress()

@@ -6,19 +6,20 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
-using Onion.Application.DTOs.Email;
 using Onion.Application.Enums;
 using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
 using Onion.Domain.Settings;
 using Onion.Identity.Helpers;
 using Onion.Identity.Models;
+using Onion.Infrastructure.Features.EmailFeatures.Commands;
 
 namespace Onion.Identity.Services
 {
@@ -27,7 +28,7 @@ namespace Onion.Identity.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailService _emailService;
+        private readonly IMediator _mediator;
         private readonly JWTSettings _jwtSettings;
         private readonly IDateTimeService _dateTimeService;
 
@@ -36,14 +37,14 @@ namespace Onion.Identity.Services
             IOptions<JWTSettings> jwtSettings,
             IDateTimeService dateTimeService,
             SignInManager<ApplicationUser> signInManager,
-            IEmailService emailService)
+            IMediator mediator)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
             _dateTimeService = dateTimeService;
             _signInManager = signInManager;
-            this._emailService = emailService;
+            _mediator = mediator;
         }
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request, string ipAddress)
@@ -94,9 +95,16 @@ namespace Onion.Identity.Services
                 {
                     await _userManager.AddToRoleAsync(user, Roles.Basic.ToString());
                     var verificationUri = await SendVerificationEmail(user, origin);
-                    //TODO: Attach Email Service here and configure it via appsettings
-                    await _emailService.SendAsync(new EmailRequest() { From = "mail@codewithmukesh.com", To = user.Email, Body = $"Please confirm your account by visiting this URL {verificationUri}", Subject = "Confirm Registration" });
-                    return new Response<string>(user.Id.ToString(), message: $"User Registered. Please confirm your account by visiting this URL {verificationUri}");
+
+                    await _mediator.Send(new SendEmailCommand
+                    {
+                        From = "mail@codewithmukesh.com",
+                        To = user.Email,
+                        Body = $"Please confirm your account by visiting this URL {verificationUri}",
+                        Subject = "Confirm Registration"
+                    });
+
+                    return new Response<string>(user.Id, message: $"User Registered. Please confirm your account by visiting this URL {verificationUri}");
                 }
 
                 throw new AccountException($"{result.Errors}");
@@ -187,41 +195,6 @@ namespace Onion.Identity.Services
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
-        }
-
-        public async Task ForgotPassword(ForgotPasswordRequest model, string origin)
-        {
-            var account = await _userManager.FindByEmailAsync(model.Email);
-
-            // always return ok response to prevent email enumeration
-            if (account == null) return;
-
-            var code = await _userManager.GeneratePasswordResetTokenAsync(account);
-            var route = "api/account/reset-password/";
-            var _enpointUri = new Uri(string.Concat($"{origin}/", route));
-            var emailRequest = new EmailRequest()
-            {
-                Body = $"You reset token is - {code}",
-                To = model.Email,
-                Subject = "Reset Password",
-            };
-            await _emailService.SendAsync(emailRequest);
-        }
-
-        public async Task<Response<string>> ResetPassword(ResetPasswordRequest model)
-        {
-            var account = await _userManager.FindByEmailAsync(model.Email);
-
-            if (account == null)
-                throw new AccountException($"No Accounts Registered with {model.Email}.", model.Email);
-
-            var result = await _userManager.ResetPasswordAsync(account, model.Token, model.Password);
-            if (result.Succeeded)
-            {
-                return new Response<string>(model.Email, message: $"Password Resetted.");
-            }
-
-            throw new AccountException($"Error occured while reseting the password.");
         }
     }
 }

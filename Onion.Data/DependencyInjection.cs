@@ -22,7 +22,6 @@ namespace Onion.Data
                     }));
 
             services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>());
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         }
     }
 }
