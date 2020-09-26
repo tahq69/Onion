@@ -5,6 +5,7 @@ using Onion.Application.DTOs.Account;
 using Onion.Application.Interfaces;
 using Onion.Identity.Features.PasswordFeatures.Commands;
 using System.Threading.Tasks;
+using Onion.Identity.Features.AccountFeatures.Commands;
 
 namespace Onion.Web.Controllers
 {
@@ -12,31 +13,47 @@ namespace Onion.Web.Controllers
     [ApiController]
     public class AccountController : BaseApiController
     {
-        private readonly IAccountService _accountService;
-
-        public AccountController(IAccountService accountService)
-        {
-            _accountService = accountService;
-        }
-
         [HttpPost("authenticate")]
-        public async Task<IActionResult> AuthenticateAsync(AuthenticationRequest request)
+        public async Task<ActionResult<Response<AuthenticationResponse>>> AuthenticateAsync(
+            AuthenticationRequest request)
         {
-            return Ok(await _accountService.AuthenticateAsync(request, GenerateIPAddress()));
+            var result = await Mediator.Send(new AuthenticateUserCommand
+            {
+                Email = request.Email,
+                Password = request.Password,
+                IpAddress = GenerateIpAddress(),
+            });
+
+            return Ok(result);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync(RegisterRequest request)
+        public async Task<ActionResult<Response<string>>> RegisterAsync(RegisterRequest request)
         {
             var origin = Request.Headers["origin"];
-            return Ok(await _accountService.RegisterAsync(request, origin));
+            var result = await Mediator.Send(new RegisterUserCommand
+            {
+                Origin = origin,
+                Email = request.Email,
+                Password = request.Password,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                UserName = request.UserName,
+            });
+
+            return Ok(result);
         }
 
         [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
         {
-            var origin = Request.Headers["origin"];
-            return Ok(await _accountService.ConfirmEmailAsync(userId, code));
+            var result = await Mediator.Send(new ConfirmEmailCommand
+            {
+                Code = code,
+                UserId = userId,
+            });
+
+            return Ok(result);
         }
 
         [HttpPost("forgot-password")]
@@ -74,7 +91,7 @@ namespace Onion.Web.Controllers
             return BadRequest(result);
         }
 
-        private string GenerateIPAddress()
+        private string GenerateIpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];

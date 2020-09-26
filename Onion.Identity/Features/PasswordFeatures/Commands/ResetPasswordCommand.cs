@@ -12,9 +12,7 @@ namespace Onion.Identity.Features.PasswordFeatures.Commands
     public class ResetPasswordCommand : IRequest<Response<string>>
     {
         public string Email { get; set; }
-
         public string Token { get; set; }
-
         public string Password { get; set; }
 
         public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Response<string>>

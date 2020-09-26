@@ -13,7 +13,9 @@ using Onion.Identity.Services;
 using System;
 using System.Reflection;
 using System.Text;
+using MediatR;
 using Onion.Domain.Settings;
+using Onion.Identity.Interfaces;
 using IdentityDbContext = Onion.Identity.Contexts.IdentityDbContext;
 
 namespace Onion.Identity
@@ -22,6 +24,7 @@ namespace Onion.Identity
     {
         public static void AddIdentityInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddDbContext<IdentityDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("IdentityConnection"),
@@ -35,7 +38,7 @@ namespace Onion.Identity
                 .AddEntityFrameworkStores<IdentityDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IJwtService, JwtService>();
 
             services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
             services.AddAuthentication(options =>

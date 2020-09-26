@@ -4,6 +4,6 @@ namespace Onion.Application.Interfaces
 {
     public interface IDateTimeService
     {
-        DateTime NowUtc { get; }
+        DateTime UtcNow { get; }
     }
 }
