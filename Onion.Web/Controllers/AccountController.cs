@@ -9,10 +9,18 @@ using Onion.Identity.Features.AccountFeatures.Commands;
 
 namespace Onion.Web.Controllers
 {
+    /// <summary>
+    /// User account controller.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : BaseApiController
     {
+        /// <summary>
+        /// Authenticate user.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("authenticate")]
         public async Task<ActionResult<Response<AuthenticationResponse>>> AuthenticateAsync(
             AuthenticationRequest request)
@@ -27,6 +35,11 @@ namespace Onion.Web.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Create new user account.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<ActionResult<Response<string>>> RegisterAsync(RegisterRequest request)
         {
@@ -44,6 +57,12 @@ namespace Onion.Web.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Confirm user email.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
         {
@@ -56,6 +75,11 @@ namespace Onion.Web.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Send password renew link to user email.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("forgot-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,6 +97,11 @@ namespace Onion.Web.Controllers
             return BadRequest(result);
         }
 
+        /// <summary>
+        /// Change password.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -21,7 +21,7 @@ namespace Onion.Web
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The entry arguments.</param>
-        public async static Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             //Read Configuration from appSettings
             var config = new ConfigurationBuilder()

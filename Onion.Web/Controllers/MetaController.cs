@@ -3,8 +3,15 @@ using System.Diagnostics;
 
 namespace Onion.Web.Controllers
 {
+    /// <summary>
+    /// Application meta data controller.
+    /// </summary>
     public class MetaController : BaseApiController
     {
+        /// <summary>
+        /// Application basic information.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("/info")]
         public ActionResult<string> Info()
         {

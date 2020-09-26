@@ -9,15 +9,27 @@ using System.Threading.Tasks;
 
 namespace Onion.Web.Middlewares
 {
+    /// <summary>
+    /// HTTP error handler.
+    /// </summary>
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Initializes new instance of the <see cref="ErrorHandlerMiddleware"/> class.
+        /// </summary>
+        /// <param name="next"></param>
         public ErrorHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
+        /// <summary>
+        /// Invoke middleware.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context)
         {
             try
