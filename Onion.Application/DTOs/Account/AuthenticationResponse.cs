@@ -10,7 +10,7 @@ namespace Onion.Application.DTOs.Account
         public string Email { get; set; }
         public IList<string> Roles { get; set; }
         public bool IsVerified { get; set; }
-        public string JWToken { get; set; }
+        public string JwToken { get; set; }
 
         [JsonIgnore]
         public string RefreshToken { get; set; }

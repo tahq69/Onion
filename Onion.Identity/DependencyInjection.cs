@@ -40,7 +40,7 @@ namespace Onion.Identity
 
             services.AddTransient<IJwtService, JwtService>();
 
-            services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
+            services.Configure<JwtSettings>(configuration.GetSection("JWTSettings"));
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -57,9 +57,9 @@ namespace Onion.Identity
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = configuration[$"JWTSettings:{nameof(JWTSettings.Issuer)}"],
-                        ValidAudience = configuration[$"JWTSettings:{nameof(JWTSettings.Audience)}"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JWTSettings.Key)}"]))
+                        ValidIssuer = configuration[$"JWTSettings:{nameof(JwtSettings.Issuer)}"],
+                        ValidAudience = configuration[$"JWTSettings:{nameof(JwtSettings.Audience)}"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JwtSettings.Key)}"]))
                     };
                     o.Events = new JwtBearerEvents()
                     {

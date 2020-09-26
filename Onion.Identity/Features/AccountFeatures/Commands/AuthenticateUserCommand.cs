@@ -72,7 +72,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 var response = new AuthenticationResponse
                 {
                     Id = user.Id,
-                    JWToken = jwToken,
+                    JwToken = jwToken,
                     Email = user.Email,
                     UserName = user.UserName,
                     Roles = roles,

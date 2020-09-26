@@ -2,6 +2,8 @@
 using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Onion.Domain.Common;
 
@@ -69,5 +71,16 @@ namespace Onion.Shared.Data
 
             return entity.Id;
         }
+
+        public async Task<List<TEntity>> Get(int pageNumber, int pageSize)
+        {
+            return await Entities
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public Task<int> CountAsync() =>
+            Entities.CountAsync();
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Onion.Application.DTOs;
 using Onion.Application.Features.ProductFeatures.Commands;
 using Onion.Application.Features.ProductFeatures.Queries;
 using Onion.Domain.Entities;
@@ -17,6 +19,28 @@ namespace Onion.Web.Controllers.v1
     public class ProductController : BaseApiController
     {
         /// <summary>
+        /// Gets paginated product records.
+        /// </summary>
+        /// <param name="filter">The pagination filters.</param>
+        /// <returns>Paginated product records.</returns>
+        [Authorize]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<PagedResponse<ICollection<Product>>>> GetAll([FromQuery] PaginationFilter filter)
+        {
+            var validFilter = filter.ValidValues();
+            var results = await Mediator.Send(new GetProductsCommand
+            {
+                PageNumber = validFilter.PageNumber,
+                PageSize = validFilter.PageSize,
+                Route = Request.Path.Value,
+            });
+
+            return Ok(results);
+        }
+
+
+        /// <summary>
         /// Creates a New Product.
         /// </summary>
         /// <param name="command"></param>
@@ -28,7 +52,7 @@ namespace Onion.Web.Controllers.v1
         {
             var id = await Mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetById), new { id }, id);
+            return CreatedAtAction(nameof(GetById), new {id}, id);
         }
 
         /// <summary>
@@ -41,7 +65,7 @@ namespace Onion.Web.Controllers.v1
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<Product>> GetById(int id)
         {
-            var query = new GetProductByIdQuery { Id = id };
+            var query = new GetProductByIdQuery {Id = id};
             var product = await Mediator.Send(query);
 
             if (product == null)
@@ -61,7 +85,7 @@ namespace Onion.Web.Controllers.v1
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult<long>> Delete(int id)
         {
-            var command = new DeleteProductByIdCommand { Id = id };
+            var command = new DeleteProductByIdCommand {Id = id};
             var result = await Mediator.Send(command);
 
             if (result == default)
@@ -90,7 +114,7 @@ namespace Onion.Web.Controllers.v1
             if (result == default)
                 return NoContent();
 
-            return AcceptedAtAction(nameof(GetById), new { id }, result);
+            return AcceptedAtAction(nameof(GetById), new {id}, result);
         }
     }
 }

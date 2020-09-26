@@ -1,6 +1,6 @@
 ﻿namespace Onion.Domain.Settings
 {
-    public class JWTSettings
+    public class JwtSettings
     {
         public string Key { get; set; }
         public string Issuer { get; set; }

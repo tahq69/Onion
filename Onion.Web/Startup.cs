@@ -13,6 +13,7 @@ using Onion.Web.Middlewares;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Onion.Application.Features.ProductFeatures.Commands;
 using Onion.Application.Interfaces;
 using Onion.Infrastructure;
 using Onion.Shared.Data;
@@ -55,6 +56,14 @@ namespace Onion.Web
             services.AddApplicationInfrastructure();
 
             services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
+            services.AddSingleton<IPageUriService>(provider =>
+            {
+                var accessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+
+                return new PageUriService(uri);
+            });
 
             #region Swagger
 

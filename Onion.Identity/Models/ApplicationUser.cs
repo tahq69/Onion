@@ -1,5 +1,6 @@
 ﻿using Onion.Application.DTOs.Account;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
 
 namespace Onion.Identity.Models
@@ -12,7 +13,7 @@ namespace Onion.Identity.Models
 
         public bool OwnsToken(string token)
         {
-            return this.RefreshTokens?.Find(x => x.Token == token) != null;
+            return RefreshTokens?.Any(x => x.Token == token) ?? false;
         }
     }
 }

@@ -19,12 +19,12 @@ namespace Onion.Identity.Services
 {
     public class JwtService : IJwtService
     {
-        private readonly JWTSettings _jwtSettings;
+        private readonly JwtSettings _jwtSettings;
         private readonly IDateTimeService _dateTime;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public JwtService(
-            IOptions<JWTSettings> jwtSettings,
+            IOptions<JwtSettings> jwtSettings,
             IDateTimeService dateTime,
             UserManager<ApplicationUser> userManager)
         {
