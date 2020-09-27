@@ -37,4 +37,4 @@ msbuild.wrn
 .vs/
 
 # Project specific ignore files
-/Onion.Web/Onion.xml
+/Onion.*/Onion.*.xml
