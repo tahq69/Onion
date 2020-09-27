@@ -21,6 +21,6 @@ namespace Onion.Web.Services
         /// <summary>
         /// Gets authenticated user identifier.
         /// </summary>
-        public string UserId { get; }
+        public string? UserId { get; }
     }
 }

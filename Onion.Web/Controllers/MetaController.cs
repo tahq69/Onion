@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Onion.Web.Controllers
 {
@@ -11,7 +12,7 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Application basic information.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Application meta information.</returns>
         [HttpGet("/info")]
         public ActionResult<string> Info()
         {
@@ -20,7 +21,11 @@ namespace Onion.Web.Controllers
             var lastUpdate = System.IO.File.GetLastWriteTime(assembly.Location);
             var version = FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
 
-            return Ok($"Version: {version}, Last Updated: {lastUpdate}");
+            return Ok(new
+            {
+                Version = version,
+                LastUpdated = lastUpdate.ToString(CultureInfo.InvariantCulture),
+            });
         }
     }
 }

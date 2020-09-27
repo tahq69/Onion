@@ -21,9 +21,10 @@ namespace Onion.Web
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The entry arguments.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static async Task Main(string[] args)
         {
-            //Read Configuration from appSettings
+            // Read Configuration from appSettings
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
