@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
-using Onion.Application.Exceptions;
-using Onion.Application.Interfaces;
 using Onion.Identity.Features.AccountFeatures.Commands;
 using Onion.Identity.Features.PasswordFeatures.Commands;
-using Onion.Infrastructure.Extensions;
 using Onion.Web.Models.Account;
 
 namespace Onion.Web.Controllers
@@ -28,6 +23,9 @@ namespace Onion.Web.Controllers
         /// <param name="request">The request model.</param>
         /// <returns>Authentication result.</returns>
         [HttpPost("authenticate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Response<AuthenticationResult>>> AuthenticateAsync(
             AuthenticationRequest request)
         {
@@ -39,6 +37,9 @@ namespace Onion.Web.Controllers
                 Password = request.Password ?? throw new ArgumentNullException(nameof(request.Password)),
                 IpAddress = GenerateIpAddress(),
             });
+
+            if (!result.Succeeded)
+                return Unauthorized(result);
 
             return Ok(result);
         }
@@ -128,12 +129,12 @@ namespace Onion.Web.Controllers
             return BadRequest(result);
         }
 
-        private string GenerateIpAddress()
+        private string? GenerateIpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];
             else
-                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+                return HttpContext.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
         }
     }
 }

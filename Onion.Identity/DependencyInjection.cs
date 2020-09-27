@@ -14,6 +14,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Onion.Domain.Settings;
 using Onion.Identity.Interfaces;
 using IdentityDbContext = Onion.Identity.Contexts.IdentityDbContext;
@@ -24,15 +25,25 @@ namespace Onion.Identity
     {
         public static void AddIdentityInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+            {
+                services.AddDbContext<IdentityDbContext>(options => options
+                    .UseInMemoryDatabase("IdentityDb")
+                    .ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+            }
+            else
+            {
+                services.AddDbContext<IdentityDbContext>(options =>
+                    options.UseSqlServer(
+                        configuration.GetConnectionString("IdentityConnection"),
+                        b =>
+                        {
+                            Assembly asm = typeof(IdentityDbContext).Assembly;
+                            b.MigrationsAssembly(asm.FullName);
+                        }));
+            }
+
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddDbContext<IdentityDbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("IdentityConnection"),
-                    b =>
-                    {
-                        Assembly asm = typeof(IdentityDbContext).Assembly;
-                        b.MigrationsAssembly(asm.FullName);
-                    }));
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<IdentityDbContext>()
@@ -42,10 +53,10 @@ namespace Onion.Identity
 
             services.Configure<JwtSettings>(configuration.GetSection("JWTSettings"));
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(o =>
                 {
                     o.RequireHttpsMetadata = false;
@@ -59,7 +70,9 @@ namespace Onion.Identity
                         ClockSkew = TimeSpan.Zero,
                         ValidIssuer = configuration[$"JWTSettings:{nameof(JwtSettings.Issuer)}"],
                         ValidAudience = configuration[$"JWTSettings:{nameof(JwtSettings.Audience)}"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JwtSettings.Key)}"]))
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JwtSettings.Key)}"]))
                     };
                     o.Events = new JwtBearerEvents()
                     {
@@ -82,7 +95,9 @@ namespace Onion.Identity
                         {
                             context.Response.StatusCode = 403;
                             context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new Response<string>("You are not authorized to access this resource"));
+                            var result =
+                                JsonConvert.SerializeObject(
+                                    new Response<string>("You are not authorized to access this resource"));
                             return context.Response.WriteAsync(result);
                         },
                     };

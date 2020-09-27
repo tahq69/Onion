@@ -29,6 +29,6 @@ namespace Onion.Identity.Interfaces
         /// </summary>
         /// <param name="ipAddress">User IP address.</param>
         /// <returns>Refresh token value.</returns>
-        RefreshToken GenerateRefreshToken(string ipAddress);
+        RefreshToken GenerateRefreshToken(string? ipAddress);
     }
 }

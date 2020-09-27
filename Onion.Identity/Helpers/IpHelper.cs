@@ -15,6 +15,7 @@ namespace Onion.Identity.Helpers
                     return ip.ToString();
                 }
             }
+
             return string.Empty;
         }
     }

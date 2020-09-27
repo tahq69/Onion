@@ -49,8 +49,8 @@ namespace Onion.Identity.Services
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim("uid", user.Id.ToString()),
-                    new Claim("ip", ipAddress)
+                    new Claim("uid", user.Id),
+                    new Claim("ip", ipAddress),
                 }
                 .Union(userClaims)
                 .Union(roleClaims);
@@ -71,13 +71,13 @@ namespace Onion.Identity.Services
         public string WriteToken(JwtSecurityToken securityToken) =>
             new JwtSecurityTokenHandler().WriteToken(securityToken);
 
-        public RefreshToken GenerateRefreshToken(string ipAddress) =>
+        public RefreshToken GenerateRefreshToken(string? ipAddress) =>
             new RefreshToken
             {
                 Token = RandomTokenString(),
                 Expires = _dateTime.UtcNow.AddDays(7),
                 Created = _dateTime.UtcNow,
-                CreatedByIp = ipAddress
+                CreatedByIp = ipAddress,
             };
 
         private string RandomTokenString()
