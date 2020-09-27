@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -76,7 +77,7 @@ namespace Onion.Web.IntegrationTests.Controllers
                 { "Email", new[] { "Invalid credentials provided." } },
             });
         }
-        
+
         [Fact, Trait("Category", "Integration")]
         public async Task AccountController_AuthenticateAsync_ReturnsTokenOnValidCredentials()
         {
@@ -93,9 +94,26 @@ namespace Onion.Web.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.Succeeded.Should().BeTrue();
             content.Errors.Should().BeNull();
-            content.Data.JwToken.Should().NotBeNullOrWhiteSpace();
+            content.Data.Token.Should().NotBeNullOrWhiteSpace();
             content.Data.Email.Should().Be("superadmin@gmail.com");
             content.Data.UserName.Should().Be("superadmin");
+        }
+
+        [Fact, Trait("Category", "Integration")]
+        public async Task AccountController_AuthenticateAsync_SetsTokenToCookiesOnValidCredentials()
+        {
+            // Arrange
+            HttpClient client = Factory.CreateClient();
+            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            HttpContent sut = ToJsonContent(model);
+
+            // Act
+            var response = await client.PostAsync("/api/Account/Authenticate", sut);
+            var cookies = response.Headers.SingleOrDefault(header => header.Key == "Set-Cookie").Value;
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            cookies.Any(x => x.StartsWith("refreshToken=")).Should().BeTrue();
         }
     }
 }

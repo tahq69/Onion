@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Onion.Application\Onion.Application.csproj" />
-    <ProjectReference Include="..\Onion.Shared.Data\Onion.Shared.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,20 +5,26 @@ using Onion.Domain.Common;
 
 namespace Onion.Application.Interfaces
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity
+    public interface IRepository<TEntity, TKey>
+        where TEntity : IEntity<TKey>
     {
-        Task<TEntity> FirstOrDefault(long id);
+        Task<TEntity> FirstOrDefault(TKey id);
 
-        Task<long> Insert(TEntity entity);
+        Task<TKey> Insert(TEntity entity);
 
-        Task<long> Update(TEntity entity);
+        Task<TKey> Update(TEntity entity);
 
-        Task<long> Delete(long id);
+        Task<TKey> Delete(TKey id);
 
-        Task<long> Delete(TEntity entity);
+        Task<TKey> Delete(TEntity entity);
 
         Task<List<TEntity>> Get(int pageNumber, int pageSize);
 
         Task<int> CountAsync();
+    }
+
+    public interface IRepository<TEntity> : IRepository<TEntity, long>
+        where TEntity : BaseEntity
+    {
     }
 }

@@ -1,11 +1,12 @@
-﻿using Onion.Application.DTOs.Account;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using Onion.Application.DTOs.Account;
+using Onion.Domain.Common;
 
 namespace Onion.Identity.Models
 {
-    public class ApplicationUser : IdentityUser<string>
+    public class ApplicationUser : IdentityUser<string>, IEntity<string>
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

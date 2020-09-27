@@ -40,8 +40,4 @@
     <ProjectReference Include="..\Onion.Infrastructure\Onion.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\AccountFeatures\" />
-  </ItemGroup>
-
 </Project>

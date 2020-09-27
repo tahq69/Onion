@@ -36,7 +36,7 @@ namespace Onion.Application.DTOs.Account
         /// <summary>
         /// Gets or sets authentication JWT token.
         /// </summary>
-        public string JwToken { get; set; } = null!;
+        public string Token { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets authentication refresh tokens.

@@ -33,7 +33,7 @@ namespace Onion.Identity.Services
             _userManager = userManager;
         }
 
-        public async Task<JwtSecurityToken> GenerateJwToken(ApplicationUser user)
+        public async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);

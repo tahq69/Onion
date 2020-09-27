@@ -6,6 +6,7 @@ using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
 using Onion.Identity.Features.AccountFeatures.Commands;
 using Onion.Identity.Features.PasswordFeatures.Commands;
+using Onion.Identity.Features.TokenFeatures;
 using Onion.Web.Models.Account;
 
 namespace Onion.Web.Controllers
@@ -17,6 +18,8 @@ namespace Onion.Web.Controllers
     [ApiController]
     public class AccountController : BaseApiController
     {
+        private const string TokenCookieKey = "refreshToken";
+
         /// <summary>
         /// Authenticate user.
         /// </summary>
@@ -40,6 +43,33 @@ namespace Onion.Web.Controllers
 
             if (!result.Succeeded)
                 return Unauthorized(result);
+
+            SetTokenCookie(result.Data.Token);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Refresh token value from cookie.
+        /// </summary>
+        /// <returns>User details with new token value.</returns>
+        [HttpPost("refresh-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<Response<AuthenticationResult>>> RefreshToken()
+        {
+            if (!(Request.Cookies?.ContainsKey(TokenCookieKey) ?? false))
+            {
+                return BadRequest(new Response<AuthenticationResult>(
+                    null!,
+                    "Cookies does not contain required refresh token."));
+            }
+
+            var ipAddress = GenerateIpAddress();
+            var refreshToken = Request.Cookies[TokenCookieKey];
+            var cmd = new RefreshTokenCommand(ipAddress, refreshToken);
+            var result = await Mediator.Send(cmd);
 
             return Ok(result);
         }
@@ -129,6 +159,8 @@ namespace Onion.Web.Controllers
             return BadRequest(result);
         }
 
+        #region Helper methods
+
         private string? GenerateIpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
@@ -136,5 +168,18 @@ namespace Onion.Web.Controllers
             else
                 return HttpContext.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
         }
+
+
+        private void SetTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7),
+            };
+            Response.Cookies.Append(TokenCookieKey, token, cookieOptions);
+        }
+
+        #endregion
     }
 }

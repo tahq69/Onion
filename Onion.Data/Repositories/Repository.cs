@@ -1,15 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Onion.Application.Exceptions;
-using Onion.Application.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Onion.Application.Exceptions;
+using Onion.Application.Interfaces;
 using Onion.Domain.Common;
 
-namespace Onion.Shared.Data
+namespace Onion.Data.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey>
+        where TEntity : class, IEntity<TKey>
+        where TKey : struct
     {
         private readonly IAppDbContext _context;
 
@@ -20,10 +22,10 @@ namespace Onion.Shared.Data
 
         protected DbSet<TEntity> Entities => _context.Set<TEntity>();
 
-        public Task<TEntity> FirstOrDefault(long id) =>
-            Entities.FirstOrDefaultAsync(e => e.Id == id);
+        public Task<TEntity> FirstOrDefault(TKey id) =>
+            Entities.FirstOrDefaultAsync(e => e.Id.Equals(id));
 
-        public async Task<long> Insert(TEntity entity)
+        public async Task<TKey> Insert(TEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -34,7 +36,7 @@ namespace Onion.Shared.Data
             return entity.Id;
         }
 
-        public async Task<long> Update(TEntity entity)
+        public async Task<TKey> Update(TEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -45,15 +47,15 @@ namespace Onion.Shared.Data
             return entity.Id;
         }
 
-        public async Task<long> Delete(long id)
+        public async Task<TKey> Delete(TKey id)
         {
-            if (id == default)
+            if (id.Equals(default(TKey)))
                 throw new ArgumentNullException(nameof(id));
 
             TEntity entity = await this.FirstOrDefault(id);
 
             if (entity == null)
-                throw new RecordNotFoundException(id, typeof(TEntity));
+                throw new RecordNotFoundException<TKey>(id, typeof(TEntity));
 
             Entities.Remove(entity);
             await _context.SaveChangesAsync();
@@ -61,10 +63,10 @@ namespace Onion.Shared.Data
             return entity.Id;
         }
 
-        public async Task<long> Delete(TEntity entity)
+        public async Task<TKey> Delete(TEntity entity)
         {
             if (entity == null)
-                throw new RecordNotFoundException(default, typeof(TEntity));
+                throw new RecordNotFoundException<int>(default, typeof(TEntity));
 
             Entities.Remove(entity);
             await _context.SaveChangesAsync();
@@ -82,5 +84,14 @@ namespace Onion.Shared.Data
 
         public Task<int> CountAsync() =>
             Entities.CountAsync();
+    }
+
+    public class Repository<TEntity> : Repository<TEntity, long>
+        where TEntity : BaseEntity
+    {
+        public Repository(IAppDbContext context)
+            : base(context)
+        {
+        }
     }
 }

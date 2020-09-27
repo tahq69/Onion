@@ -92,15 +92,15 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                     return InvalidCredentials($"Account email address '{request.Email}' is not confirmed.");
                 }
 
-                JwtSecurityToken securityToken = await _jwt.GenerateJwToken(user);
-                string jwToken = _jwt.WriteToken(securityToken);
+                JwtSecurityToken jwtToken = await _jwt.GenerateJwtToken(user);
+                string token = _jwt.WriteToken(jwtToken);
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 RefreshToken refreshToken = _jwt.GenerateRefreshToken(request.IpAddress);
 
                 var response = new AuthenticationResult
                 {
                     Id = user.Id,
-                    JwToken = jwToken,
+                    Token = token,
                     Email = user.Email,
                     UserName = user.UserName,
                     Roles = roles,

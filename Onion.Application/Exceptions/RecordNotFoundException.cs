@@ -7,12 +7,14 @@ namespace Onion.Application.Exceptions
     /// <summary>
     /// When record not found in DB/IO e.c. this exception will occur.
     /// </summary>
+    /// <typeparam name="T">Type of the record identifier.</typeparam>
     /// <seealso cref="Onion.Application.Exceptions.BaseException" />
     [Serializable]
-    public class RecordNotFoundException : BaseException
+    public class RecordNotFoundException<T> : BaseException
+        where T : struct
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecordNotFoundException"/> class.
+        /// Initializes a new instance of the <see cref="RecordNotFoundException{T}"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public RecordNotFoundException(string message)
@@ -21,11 +23,11 @@ namespace Onion.Application.Exceptions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecordNotFoundException"/> class.
+        /// Initializes a new instance of the <see cref="RecordNotFoundException{T}"/> class.
         /// </summary>
         /// <param name="id">The record search identifier.</param>
         /// <param name="recordType">Type of the record.</param>
-        public RecordNotFoundException(long id, [AllowNull] Type recordType)
+        public RecordNotFoundException(T id, [AllowNull] Type recordType)
             : base(
                 $"Could not find record '{id}'" +
                 (recordType == null ? "." : $" of '{recordType.FullName}' type."))

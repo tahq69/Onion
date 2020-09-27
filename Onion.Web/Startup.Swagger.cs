@@ -22,7 +22,6 @@ namespace Onion.Web
                 c.LoadXmlComments(typeof(Data.DependencyInjection));
                 c.LoadXmlComments(typeof(Identity.DependencyInjection));
                 c.LoadXmlComments(typeof(Infrastructure.DependencyInjection));
-                c.LoadXmlComments(typeof(Shared.Data.DependencyInjection));
 
                 c.CustomSchemaIds(SwaggerGenExtensions.SchemaIdSelector);
                 c.SwaggerDoc("v1", new OpenApiInfo

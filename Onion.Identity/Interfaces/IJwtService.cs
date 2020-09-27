@@ -11,11 +11,11 @@ namespace Onion.Identity.Interfaces
     public interface IJwtService
     {
         /// <summary>
-        /// Generate JW Token for provided <param name="user" />.
+        /// Generate JWT Token for provided <param name="user" />.
         /// </summary>
         /// <param name="user">Application user.</param>
         /// <returns>JWT security token.</returns>
-        Task<JwtSecurityToken> GenerateJwToken(ApplicationUser user);
+        Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user);
 
         /// <summary>
         /// Serializes a <see cref="JwtSecurityToken"/> into a JWT in Compact Serialization Format.

@@ -3,9 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Onion.Application.Interfaces;
 using Onion.Data.Contexts;
-using Onion.Shared.Data;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Onion.Data.Repositories;
 
 namespace Onion.Data
 {
@@ -32,6 +33,8 @@ namespace Onion.Data
             }
 
             services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>());
+            services.TryAddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.TryAddScoped(typeof(IRepository<,>), typeof(Repository<,>));
         }
     }
 }

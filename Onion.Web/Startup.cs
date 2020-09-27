@@ -50,7 +50,6 @@ namespace Onion.Web
             services.AddHttpContextAccessor();
 
             services.AddInfrastructure(Configuration);
-            services.AddSharedDataInfrastructure(Configuration);
             services.AddIdentityInfrastructure(Configuration);
             services.AddDataInfrastructure(Configuration);
             services.AddApplicationInfrastructure();
