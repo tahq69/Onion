@@ -7,9 +7,9 @@ namespace Onion.Identity.Models
 {
     public class ApplicationUser : IdentityUser<string>
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public List<RefreshToken> RefreshTokens { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public List<RefreshToken> RefreshTokens { get; set; } = null!;
 
         public bool OwnsToken(string token)
         {

@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
@@ -30,21 +31,35 @@ namespace Onion.Application.Exceptions
         {
             foreach (ValidationFailure failure in failures)
             {
-                Errors.Add(failure.PropertyName, failure.ErrorMessage);
+                if (Errors.ContainsKey(failure.PropertyName))
+                    Errors[failure.PropertyName].Add(failure.ErrorMessage);
+                else
+                    Errors.Add(failure.PropertyName, new List<string> { failure.ErrorMessage });
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidationException"/> class.
+        /// </summary>
+        /// <param name="errors">Collection of the available errors.</param>
+        public ValidationException(IDictionary<string, ICollection<string>> errors)
+        {
+            Errors = new Dictionary<string, ICollection<string>>(errors);
         }
 
         /// <inheritdoc cref="BaseException(SerializationInfo, StreamingContext)"/>
         public ValidationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            Errors = (IDictionary<string, string>)info.GetValue(nameof(Errors), typeof(IDictionary<string, string>));
+            object? value = info.GetValue(nameof(Errors), typeof(IDictionary<string, ICollection<string>>));
+            if (value is IDictionary<string, ICollection<string>> errors)
+                Errors = errors;
         }
 
         /// <summary>
         /// Gets the validation errors.
         /// </summary>
-        public IDictionary<string, string> Errors { get; } = new Dictionary<string, string>();
+        public IDictionary<string, ICollection<string>> Errors { get; } = new Dictionary<string, ICollection<string>>();
 
         /// <inheritdoc cref="Exception.GetObjectData"/>
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
@@ -52,7 +67,7 @@ namespace Onion.Application.Exceptions
         {
             if (info == null) throw new ArgumentNullException(nameof(info));
 
-            info.AddValue(nameof(Errors), Errors, typeof(IDictionary<string, string>));
+            info.AddValue(nameof(Errors), Errors, typeof(IDictionary<string, ICollection<string>>));
 
             base.GetObjectData(info, context);
         }

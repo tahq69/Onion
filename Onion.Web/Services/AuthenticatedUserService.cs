@@ -10,7 +10,7 @@ namespace Onion.Web.Services
     public class AuthenticatedUserService : IAuthenticatedUserService
     {
         /// <summary>
-        /// Initializes new instance of the <see cref="AuthenticatedUserService"/> class.
+        /// Initializes a new instance of the <see cref="AuthenticatedUserService"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">HTTP context accessor.</param>
         public AuthenticatedUserService(IHttpContextAccessor httpContextAccessor)
@@ -19,7 +19,7 @@ namespace Onion.Web.Services
         }
 
         /// <summary>
-        /// Authenticated user identifier.
+        /// Gets authenticated user identifier.
         /// </summary>
         public string UserId { get; }
     }

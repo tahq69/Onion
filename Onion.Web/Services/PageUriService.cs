@@ -13,7 +13,7 @@ namespace Onion.Web.Services
         private readonly string _baseUri;
 
         /// <summary>
-        /// Initializes new instance of the <see cref="PageUriService"/> class.
+        /// Initializes a new instance of the <see cref="PageUriService"/> class.
         /// </summary>
         /// <param name="baseUri">Application base uri part.</param>
         public PageUriService(string baseUri)

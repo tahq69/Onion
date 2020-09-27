@@ -51,7 +51,7 @@ namespace Onion.Application.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="account">With error associated account email address.</param>
-        public AccountException(string message, string account = null)
+        public AccountException(string message, string? account = null)
             : base(message)
         {
             Account = account;
@@ -60,7 +60,7 @@ namespace Onion.Application.Exceptions
         /// <summary>
         /// Gets or sets the account email address.
         /// </summary>
-        public string Account { get; protected set; }
+        public string? Account { get; protected set; }
 
         /// <inheritdoc cref="Exception(SerializationInfo, StreamingContext)"/>
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]

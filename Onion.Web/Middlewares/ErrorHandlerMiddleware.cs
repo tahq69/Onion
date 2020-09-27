@@ -17,9 +17,9 @@ namespace Onion.Web.Middlewares
         private readonly RequestDelegate _next;
 
         /// <summary>
-        /// Initializes new instance of the <see cref="ErrorHandlerMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="ErrorHandlerMiddleware"/> class.
         /// </summary>
-        /// <param name="next"></param>
+        /// <param name="next">Request pipeline delegate.</param>
         public ErrorHandlerMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -28,8 +28,8 @@ namespace Onion.Web.Middlewares
         /// <summary>
         /// Invoke middleware.
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
+        /// <param name="context">HTTP request context.</param>
+        /// <returns>Invoked pipeline result with handled error body.</returns>
         public async Task Invoke(HttpContext context)
         {
             try

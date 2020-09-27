@@ -21,14 +21,14 @@ using Onion.Identity.Models;
 
 namespace Onion.Identity.Features.AccountFeatures.Commands
 {
-    public class AuthenticateUserCommand : IRequest<Response<AuthenticationResponse>>
+    public class AuthenticateUserCommand : IRequest<Response<AuthenticationResult>>
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string IpAddress { get; set; }
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public string IpAddress { get; set; } = null!;
 
         public class
-            AuthenticateUserHandler : IRequestHandler<AuthenticateUserCommand, Response<AuthenticationResponse>>
+            AuthenticateUserHandler : IRequestHandler<AuthenticateUserCommand, Response<AuthenticationResult>>
         {
             private readonly IJwtService _jwt;
             private readonly UserManager<ApplicationUser> _userManager;
@@ -44,7 +44,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 _signInManager = signInManager;
             }
 
-            public async Task<Response<AuthenticationResponse>> Handle(
+            public async Task<Response<AuthenticationResult>> Handle(
                 AuthenticateUserCommand request,
                 CancellationToken ct)
             {
@@ -69,7 +69,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 RefreshToken refreshToken = _jwt.GenerateRefreshToken(request.IpAddress);
 
-                var response = new AuthenticationResponse
+                var response = new AuthenticationResult
                 {
                     Id = user.Id,
                     JwToken = jwToken,
@@ -80,7 +80,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                     RefreshToken = refreshToken.Token,
                 };
 
-                return new Response<AuthenticationResponse>(response, $"Authenticated {user.UserName}");
+                return new Response<AuthenticationResult>(response, $"Authenticated {user.UserName}");
             }
         }
     }

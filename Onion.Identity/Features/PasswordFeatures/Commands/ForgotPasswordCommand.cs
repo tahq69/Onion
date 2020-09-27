@@ -11,9 +11,9 @@ namespace Onion.Identity.Features.PasswordFeatures.Commands
 {
     public class ForgotPasswordCommand : IRequest<Response<string>>
     {
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
-        public string Origin { get; set; }
+        public string Origin { get; set; } = null!;
 
         public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand, Response<string>>
         {

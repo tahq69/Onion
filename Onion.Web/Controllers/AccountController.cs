@@ -1,11 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
+using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
-using Onion.Identity.Features.PasswordFeatures.Commands;
-using System.Threading.Tasks;
 using Onion.Identity.Features.AccountFeatures.Commands;
+using Onion.Identity.Features.PasswordFeatures.Commands;
+using Onion.Infrastructure.Extensions;
+using Onion.Web.Models.Account;
 
 namespace Onion.Web.Controllers
 {
@@ -19,16 +25,18 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Authenticate user.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+        /// <param name="request">The request model.</param>
+        /// <returns>Authentication result.</returns>
         [HttpPost("authenticate")]
-        public async Task<ActionResult<Response<AuthenticationResponse>>> AuthenticateAsync(
+        public async Task<ActionResult<Response<AuthenticationResult>>> AuthenticateAsync(
             AuthenticationRequest request)
         {
+            AssertModelState();
+
             var result = await Mediator.Send(new AuthenticateUserCommand
             {
-                Email = request.Email,
-                Password = request.Password,
+                Email = request.Email ?? throw new ArgumentNullException(nameof(request.Email)),
+                Password = request.Password ?? throw new ArgumentNullException(nameof(request.Password)),
                 IpAddress = GenerateIpAddress(),
             });
 

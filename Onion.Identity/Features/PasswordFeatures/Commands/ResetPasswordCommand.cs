@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -11,9 +12,9 @@ namespace Onion.Identity.Features.PasswordFeatures.Commands
 {
     public class ResetPasswordCommand : IRequest<Response<string>>
     {
-        public string Email { get; set; }
-        public string Token { get; set; }
-        public string Password { get; set; }
+        public string Email { get; set; } = null!;
+        public string Token { get; set; } = null!;
+        public string Password { get; set; } = null!;
 
         public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, Response<string>>
         {
@@ -37,9 +38,14 @@ namespace Onion.Identity.Features.PasswordFeatures.Commands
                     return new Response<string>(request.Email, "Password reset completed.");
                 }
 
-                var errors = result.Errors.ToDictionary(
-                    x => x.Code,
-                    x => x.Description);
+                var errors = new Dictionary<string, ICollection<string>>();
+                foreach (var error in result.Errors)
+                {
+                    if (errors.ContainsKey(error.Code))
+                        errors[error.Code].Add(error.Description);
+                    else
+                        errors.Add(error.Code, new List<string> { error.Description });
+                }
 
                 return new Response<string>("Error occurred while reseting the password.", errors);
             }

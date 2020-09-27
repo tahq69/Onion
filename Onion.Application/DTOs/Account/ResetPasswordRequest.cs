@@ -6,17 +6,17 @@ namespace Onion.Application.DTOs.Account
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required]
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         [Required]
         [MinLength(6)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         [Required]
         [Compare(nameof(Password))]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
     }
 }

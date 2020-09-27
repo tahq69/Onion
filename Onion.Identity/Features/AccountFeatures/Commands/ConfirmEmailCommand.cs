@@ -12,8 +12,8 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
 {
     public class ConfirmEmailCommand : IRequest<Response<string>>
     {
-        public string UserId { get; set; }
-        public string Code { get; set; }
+        public string UserId { get; set; } = null!;
+        public string Code { get; set; } = null!;
 
         public class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand, Response<string>>
         {
