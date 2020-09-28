@@ -4,6 +4,7 @@
 
 This project is made from guide at [this site](https://www.codewithmukesh.com/blog/onion-architecture-in-aspnet-core/)
 with repository pattern from [this guide](https://medium.com/@chathuranga94/generic-repository-pattern-for-asp-net-core-9e3e230e20cb)
+ and JWT [from here](https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens)
 
 ## Migrations
 

@@ -16,8 +16,8 @@ namespace Onion.Shared.Extensions
         /// <returns>User friendly name of the type.</returns>
         /// <example>
         /// <code>
-        ///     string name = typeof(A.B.C.GenericType<System.String>).UserFriendlyName();
-        ///     Assert.Equal("A.B.C.GenericType<String>", name);
+        ///     string name = typeof(A.B.C.GenericType&lt;System.String&gt;).UserFriendlyName();
+        ///     Assert.Equal("A.B.C.GenericType&lt;String&gt;", name);
         /// </code>
         /// </example>
         public static string UserFriendlyName(this Type type)
@@ -46,8 +46,8 @@ namespace Onion.Shared.Extensions
         /// <returns>User friendly name of the type.</returns>
         /// <example>
         /// <code>
-        ///     string name = typeof(A.B.C.GenericType<System.String>).UserFriendlyName("A.B");
-        ///     Assert.Equal("C.GenericType<String>", name);
+        ///     string name = typeof(A.B.C.GenericType&lt;System.String&gt;).UserFriendlyName("A.B");
+        ///     Assert.Equal("C.GenericType&lt;String&gt;", name);
         /// </code>
         /// </example>
         public static string UserFriendlyName(this Type type, string discardPrefix)

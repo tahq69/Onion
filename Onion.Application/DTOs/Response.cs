@@ -70,7 +70,7 @@ namespace Onion.Application.DTOs
         /// <typeparam name="TData">Type of the record data.</typeparam>
         /// <returns>Response message with filled error field.</returns>
         public static Response<TData> Error<TData>(string propName, string message)
-            where TData : struct, T =>
+            where TData : T =>
             Response<TData>.Error(default(TData), propName, message);
 
         /// <summary>

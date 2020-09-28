@@ -32,6 +32,7 @@ namespace Onion.Identity.Contexts
             builder.HasDefaultSchema("identity");
 
             builder.Entity<ApplicationUser>(entity => { entity.ToTable(name: "User"); });
+            builder.Entity<ApplicationUser>().Property(u => u.Id).ValueGeneratedOnAdd();
 
             builder.Entity<ApplicationRole>(entity => { entity.ToTable(name: "Role"); });
 

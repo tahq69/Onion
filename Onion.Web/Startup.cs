@@ -55,13 +55,13 @@ namespace Onion.Web
             services.AddApplicationInfrastructure();
 
             services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
-            services.AddSingleton<IPageUriService>(provider =>
+            services.AddSingleton<IApiUriService>(provider =>
             {
                 var accessor = provider.GetRequiredService<IHttpContextAccessor>();
                 var request = accessor.HttpContext.Request;
                 var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
 
-                return new PageUriService(uri);
+                return new ApiUriService(uri);
             });
 
             ConfigureSwagger(services);

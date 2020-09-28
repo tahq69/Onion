@@ -4,6 +4,7 @@ using Onion.Application.DTOs;
 using Onion.Application.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -40,7 +41,7 @@ namespace Onion.Web.Middlewares
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-                var responseModel = new Response<string>() { Succeeded = false, Message = error?.Message };
+                var responseModel = new Response<string> { Succeeded = false, Message = error?.Message };
 
                 switch (error)
                 {
@@ -53,6 +54,7 @@ namespace Onion.Web.Middlewares
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         responseModel.Errors = e.Errors;
+                        responseModel.Message = e.Message;
                         break;
 
                     case KeyNotFoundException e:
@@ -63,6 +65,9 @@ namespace Onion.Web.Middlewares
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        if (Debugger.IsAttached)
+                            responseModel.Message += $"{Environment.NewLine}{error}";
+
                         break;
                 }
 

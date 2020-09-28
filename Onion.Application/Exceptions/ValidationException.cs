@@ -43,6 +43,7 @@ namespace Onion.Application.Exceptions
         /// </summary>
         /// <param name="errors">Collection of the available errors.</param>
         public ValidationException(IDictionary<string, ICollection<string>> errors)
+            : this()
         {
             Errors = new Dictionary<string, ICollection<string>>(errors);
         }

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ReSharper disable NotResolvedInText
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,8 +36,7 @@ namespace Onion.Web.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Response<AuthenticationResult>>> AuthenticateAsync(
-            AuthenticationRequest request)
+        public async Task<ActionResult<Response<AuthenticationResult>>> AuthenticateAsync(AuthenticationRequest request)
         {
             AssertModelState();
 
@@ -72,6 +72,7 @@ namespace Onion.Web.Controllers
             }
 
             string? ipAddress = GenerateIpAddress();
+
             string refreshToken = TokenCookie ?? throw new ArgumentNullException("Token");
             var cmd = new RefreshTokenCommand(ipAddress, refreshToken);
             var result = await Mediator.Send(cmd);
@@ -118,21 +119,26 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Create new user account.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+        /// <param name="request">Account registration request.</param>
+        /// <returns>Email confirmation details.</returns>
         [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Response<string>>> RegisterAsync(RegisterRequest request)
         {
-            var origin = Request.Headers["origin"];
+            AssertModelState();
+
             var result = await Mediator.Send(new RegisterUserCommand
             {
-                Origin = origin,
-                Email = request.Email,
-                Password = request.Password,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                UserName = request.UserName,
+                Email = request.Email ?? throw new ArgumentNullException(nameof(request.Email)),
+                Password = request.Password ?? throw new ArgumentNullException(nameof(request.Password)),
+                FirstName = request.FirstName ?? throw new ArgumentNullException(nameof(request.FirstName)),
+                LastName = request.LastName ?? throw new ArgumentNullException(nameof(request.LastName)),
+                UserName = request.UserName ?? throw new ArgumentNullException(nameof(request.UserName)),
             });
+
+            if (!result.Succeeded)
+                return BadRequest(result);
 
             return Ok(result);
         }
@@ -168,7 +174,6 @@ namespace Onion.Web.Controllers
             var result = await Mediator.Send(new ForgotPasswordCommand
             {
                 Email = model.Email,
-                Origin = Request.Headers["origin"],
             });
 
             if (result.Succeeded)

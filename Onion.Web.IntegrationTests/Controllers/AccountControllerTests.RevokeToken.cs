@@ -1,13 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Onion.Application.DTOs;
-using Onion.Application.DTOs.Account;
 using Onion.Identity.Interfaces;
 using Onion.Identity.Models;
 using Onion.Web.Models.Account;
@@ -22,8 +20,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await CreateToken("superadmin@gmail.com");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = null });
 
             // Act
@@ -41,8 +38,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await CreateToken("superadmin@gmail.com");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = "invalid" });
 
             // Act
@@ -61,8 +57,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await CreateToken("superadmin@gmail.com");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
             string refreshToken = await CreateRefreshToken("superadmin@gmail.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = refreshToken });
 
@@ -74,16 +69,6 @@ namespace Onion.Web.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.Succeeded.Should().BeTrue();
             content.Message.Should().Be("Token revoked");
-        }
-
-        private async Task<string> CreateToken(string userEmail)
-        {
-            IJwtService jwt = Factory.Services.GetRequiredService<IJwtService>();
-            ApplicationUser user = await Factory.Services
-                .GetRequiredService<UserManager<ApplicationUser>>()
-                .FindByEmailAsync(userEmail);
-
-            return jwt.WriteToken(await jwt.GenerateJwtToken(user));
         }
 
         private async Task<string> CreateRefreshToken(string userEmail)

@@ -1,59 +1,55 @@
-﻿using MailKit.Net.Smtp;
-using MailKit.Security;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MimeKit;
-using Onion.Domain.Settings;
-using System;
+﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Onion.Application.Interfaces;
 
 namespace Onion.Infrastructure.Features.EmailFeatures.Commands
 {
-    public class SendEmailCommand : IRequest
+    /// <summary>
+    /// Send email command.
+    /// </summary>
+    public class SendEmailCommand : IRequest<Unit>
     {
-        public string To { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
-        public string From { get; set; }
+        /// <summary>
+        /// Gets or sets email recipient.
+        /// </summary>
+        public string To { get; set; } = null!;
 
-        public class SendEmailHandler : IRequestHandler<SendEmailCommand>
+        /// <summary>
+        /// Gets or sets email subject.
+        /// </summary>
+        public string Subject { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets email body message.
+        /// </summary>
+        public string Body { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets email sender address (Configuration value used if is not provided).
+        /// </summary>
+        public string? From { get; set; }
+
+        /// <summary>
+        /// Send email command handler.
+        /// </summary>
+        public class SendEmailHandler : IRequestHandler<SendEmailCommand, Unit>
         {
-            private readonly MailSettings _settings;
-            private readonly ILogger<SendEmailHandler> _logger;
+            private readonly IEmailService _email;
 
-            public SendEmailHandler(IOptions<MailSettings> settings, ILogger<SendEmailHandler> logger)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SendEmailHandler"/> class.
+            /// </summary>
+            /// <param name="email">Email service.</param>
+            public SendEmailHandler(IEmailService email)
             {
-                _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
-                _logger = logger;
+                _email = email;
             }
 
+            /// <inheritdoc />
             public async Task<Unit> Handle(SendEmailCommand request, CancellationToken ct)
             {
-                try
-                {
-                    var email = new MimeMessage();
-                    email.Sender = MailboxAddress.Parse(request.From ?? _settings.EmailFrom);
-                    email.To.Add(MailboxAddress.Parse(request.To));
-                    email.Subject = request.Subject;
-
-                    var builder = new BodyBuilder();
-                    builder.HtmlBody = request.Body;
-                    email.Body = builder.ToMessageBody();
-
-                    using var smtp = new SmtpClient();
-                    await smtp.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);
-                    await smtp.AuthenticateAsync(_settings.SmtpUser, _settings.SmtpPass);
-                    await smtp.SendAsync(email);
-                    await smtp.DisconnectAsync(true);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Could not send E-Mail", ex);
-
-                    throw;
-                }
+                await _email.Send(request.To, request.Subject, request.Body, request.From);
 
                 return Unit.Value;
             }

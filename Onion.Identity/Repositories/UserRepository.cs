@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Onion.Application.Interfaces;
 using Onion.Domain.Entities;
 using Onion.Identity.Contexts;
 using Onion.Identity.Interfaces;

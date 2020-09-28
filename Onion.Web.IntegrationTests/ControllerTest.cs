@@ -35,10 +35,10 @@ namespace Onion.Web.IntegrationTests
         /// <returns>Content response string.</returns>
         protected async Task<string> ReadResponseContent(HttpResponseMessage response)
         {
-            using Stream stream = await response.Content.ReadAsStreamAsync();
+            await using Stream stream = await response.Content.ReadAsStreamAsync();
             using var streamReader = new StreamReader(stream);
 
-            return streamReader.ReadToEnd();
+            return await streamReader.ReadToEndAsync();
         }
 
         /// <summary>

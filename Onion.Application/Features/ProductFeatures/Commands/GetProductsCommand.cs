@@ -17,8 +17,8 @@ namespace Onion.Application.Features.ProductFeatures.Commands
         {
             private readonly IRepository<Product, long> _products;
 
-            public GetProductsHandler(IRepository<Product, long> products, IPageUriService pageUri)
-                : base(pageUri)
+            public GetProductsHandler(IRepository<Product, long> products, IApiUriService apiUri)
+                : base(apiUri)
             {
                 _products = products;
             }
