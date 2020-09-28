@@ -61,5 +61,35 @@ namespace Onion.Application.DTOs
         /// Gets or sets the response data.
         /// </summary>
         public T Data { get; set; }
+
+        /// <summary>
+        /// Create error response with message and single error field.
+        /// </summary>
+        /// <param name="propName">Error field name.</param>
+        /// <param name="message">Error message.</param>
+        /// <typeparam name="TData">Type of the record data.</typeparam>
+        /// <returns>Response message with filled error field.</returns>
+        public static Response<TData> Error<TData>(string propName, string message)
+            where TData : struct, T =>
+            Response<TData>.Error(default(TData), propName, message);
+
+        /// <summary>
+        /// Create error response with message and single error field.
+        /// </summary>
+        /// <param name="data">Response data field value.</param>
+        /// <param name="propName">Error field name.</param>
+        /// <param name="message">Error message.</param>
+        /// <returns>Response message with filled error field.</returns>
+        public static Response<T> Error(T data, string propName, string message) =>
+            new Response<T>
+            {
+                Message = message,
+                Succeeded = false,
+                Data = data,
+                Errors = new Dictionary<string, ICollection<string>>
+                {
+                    { propName, new[] { message } },
+                },
+            };
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Onion.Shared.Extensions;
 using Xunit;
 
 namespace Onion.Web.IntegrationTests
@@ -51,7 +53,16 @@ namespace Onion.Web.IntegrationTests
 
             content.Should().NotBeNullOrWhiteSpace("Response content is empty.");
 
-            return JsonConvert.DeserializeObject<T>(content);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(content);
+            }
+            catch (JsonSerializationException ex)
+            {
+                var type = typeof(T).UserFriendlyName("Onion.");
+                var status = (int)response.StatusCode;
+                throw new Exception($"{status}: Could not deserialize content to {type}: {content}", ex);
+            }
         }
 
         protected HttpContent ToJsonContent(object value)

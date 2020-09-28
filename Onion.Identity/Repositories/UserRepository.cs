@@ -19,6 +19,12 @@ namespace Onion.Identity.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task<ApplicationUser> SingleByEmail(string userEmail, CancellationToken ct) =>
+            await _dbContext.Users
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefaultAsync(u => u.Email == userEmail, ct);
+
+
         public async Task AddRefreshToken(string userId, RefreshToken token, CancellationToken ct)
         {
             var user = await _dbContext.Users

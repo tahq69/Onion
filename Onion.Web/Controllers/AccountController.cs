@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Onion.Application.DTOs;
@@ -19,6 +21,10 @@ namespace Onion.Web.Controllers
     public class AccountController : BaseApiController
     {
         private const string TokenCookieKey = "refreshToken";
+
+        private bool HasTokenCookie => Request.Cookies?.ContainsKey(TokenCookieKey) ?? false;
+
+        private string? TokenCookie => Request.Cookies[TokenCookieKey];
 
         /// <summary>
         /// Authenticate user.
@@ -57,21 +63,54 @@ namespace Onion.Web.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Response<AuthenticationResult>>> RefreshToken()
+        public async Task<ActionResult<Response<AuthenticationResult>>> RefreshTokenAsync()
         {
-            if (!(Request.Cookies?.ContainsKey(TokenCookieKey) ?? false))
+            if (!HasTokenCookie)
             {
                 return BadRequest(new Response<AuthenticationResult>(
                     "Cookies does not contain required refresh token."));
             }
 
-            var ipAddress = GenerateIpAddress();
-            var refreshToken = Request.Cookies[TokenCookieKey];
+            string? ipAddress = GenerateIpAddress();
+            string refreshToken = TokenCookie ?? throw new ArgumentNullException("Token");
             var cmd = new RefreshTokenCommand(ipAddress, refreshToken);
             var result = await Mediator.Send(cmd);
 
             if (!result.Succeeded)
                 return Unauthorized(result);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Refresh token value from cookie.
+        /// </summary>
+        /// <param name="request">The revoke token request.</param>
+        /// <returns>User details with new token value.</returns>
+        [Authorize]
+        [HttpPost("revoke-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<Response<bool>>> RevokeTokenAsync(RevokeTokenRequest request)
+        {
+            var token = request?.Token;
+            if (string.IsNullOrWhiteSpace(token) && HasTokenCookie)
+                token = TokenCookie;
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return BadRequest(Response<bool>.Error(
+                    false,
+                    nameof(request.Token),
+                    "Token is required"));
+            }
+
+            var ipAddress = GenerateIpAddress();
+            Response<bool> result = await Mediator.Send(new RevokeTokenCommand(token, ipAddress));
+
+            if (!result.Succeeded)
+                return NotFound(result);
 
             return Ok(result);
         }

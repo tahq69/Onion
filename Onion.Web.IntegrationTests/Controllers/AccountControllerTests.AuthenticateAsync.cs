@@ -128,7 +128,9 @@ namespace Onion.Web.IntegrationTests.Controllers
             // Act
             var response = await client.PostAsync("/api/Account/Authenticate", sut);
             var content = await ReadResponseContent<Response<AuthenticationResult>>(response);
-            var cookies = response.Headers.SingleOrDefault(header => header.Key == "Set-Cookie").Value;
+            var cookies = response.Headers
+                .SingleOrDefault(header => header.Key == "Set-Cookie")
+                .Value.ToList();
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

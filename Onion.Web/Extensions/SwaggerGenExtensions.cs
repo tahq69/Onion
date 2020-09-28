@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.XPath;
 using Microsoft.Extensions.DependencyInjection;
+using Onion.Shared.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Onion.Web.Extensions
@@ -59,25 +60,6 @@ namespace Onion.Web.Extensions
         /// </summary>
         /// <param name="schema">The schema type.</param>
         /// <returns>Schema user friendly name.</returns>
-        public static string SchemaIdSelector(Type schema)
-        {
-            const StringComparison compare = StringComparison.InvariantCultureIgnoreCase;
-
-            // TODO: create overload with option to use FullName and discard library name from input parameter.
-            //// string prefix = t.Namespace.Replace("ABC.EGates.", string.Empty, compare);
-
-            if (!schema.IsGenericType)
-                return schema.Name;
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(schema.Name.Substring(0, schema.Name.LastIndexOf("`", compare)));
-            sb.Append(schema.GetGenericArguments().Aggregate(
-                "<",
-                (a, type) => a + (a == "<" ? string.Empty : ",") + SchemaIdSelector(type)));
-            sb.Append(">");
-
-            return sb.ToString();
-        }
+        public static string SchemaIdSelector(Type schema) => schema.UserFriendlyName();
     }
 }

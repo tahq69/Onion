@@ -47,5 +47,6 @@
     <ProjectReference Include="..\Onion.Domain\Onion.Domain.csproj" />
     <ProjectReference Include="..\Onion.Identity\Onion.Identity.csproj" />
     <ProjectReference Include="..\Onion.Data\Onion.Data.csproj" />
+    <ProjectReference Include="..\Onion.Shared\Onion.Shared.csproj" />
   </ItemGroup>
 </Project>
