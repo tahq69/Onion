@@ -4,11 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
 using Onion.Application.Interfaces;
-using Onion.Identity.Contexts;
+using Onion.Domain.Entities;
 using Onion.Identity.Interfaces;
 using Onion.Identity.Models;
 
@@ -45,8 +44,7 @@ namespace Onion.Identity.Features.TokenFeatures
         /// </summary>
         public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Response<AuthenticationResult>>
         {
-            private readonly IdentityDbContext _dbContext;
-            private readonly DbSet<ApplicationUser> _entities;
+            private readonly IUserRepository _users;
             private readonly UserManager<ApplicationUser> _userManager;
             private readonly IJwtService _jwt;
             private readonly IDateTimeService _dateTime;
@@ -54,19 +52,18 @@ namespace Onion.Identity.Features.TokenFeatures
             /// <summary>
             /// Initializes a new instance of the <see cref="RefreshTokenHandler"/> class.
             /// </summary>
-            /// <param name="dbContext">Identity database context.</param>
+            /// <param name="users">Users data repository.</param>
             /// <param name="userManager">Identity user manager.</param>
             /// <param name="jwt">JWT token service.</param>
             /// <param name="dateTime">Date time object service.</param>
             public RefreshTokenHandler(
-                IdentityDbContext dbContext,
+                IUserRepository users,
                 UserManager<ApplicationUser> userManager,
                 IJwtService jwt,
                 IDateTimeService dateTime)
             {
-                _dbContext = dbContext;
+                _users = users;
                 _userManager = userManager;
-                _entities = dbContext.Set<ApplicationUser>();
                 _jwt = jwt;
                 _dateTime = dateTime;
             }
@@ -74,9 +71,7 @@ namespace Onion.Identity.Features.TokenFeatures
             /// <inheritdoc />
             public async Task<Response<AuthenticationResult>> Handle(RefreshTokenCommand request, CancellationToken ct)
             {
-                var user = await _entities.SingleOrDefaultAsync(
-                    u => u.RefreshTokens.Any(t => t.Token == request.RefreshToken), ct);
-
+                var user = await _users.SingleByRefreshToken(request.RefreshToken, ct);
                 if (user == null)
                     return CreateFailureResponse("Invalid refresh token value.");
 
@@ -114,10 +109,8 @@ namespace Onion.Identity.Features.TokenFeatures
                 refreshToken.RevokedByIp = ipAddress;
                 refreshToken.ReplacedByToken = newRefreshToken.Token;
 
-                user.RefreshTokens.Add(newRefreshToken);
-                _dbContext.Update(user);
-
-                await _dbContext.SaveChangesAsync(ct);
+                await _users.UpdateRefreshToken(refreshToken, ct);
+                await _users.AddRefreshToken(user.Id, newRefreshToken, ct);
 
                 return newRefreshToken;
             }

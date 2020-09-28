@@ -44,7 +44,7 @@ namespace Onion.Web.Controllers
             if (!result.Succeeded)
                 return Unauthorized(result);
 
-            SetTokenCookie(result.Data.Token);
+            SetTokenCookie(result.Data.RefreshToken);
 
             return Ok(result);
         }
@@ -62,7 +62,6 @@ namespace Onion.Web.Controllers
             if (!(Request.Cookies?.ContainsKey(TokenCookieKey) ?? false))
             {
                 return BadRequest(new Response<AuthenticationResult>(
-                    null!,
                     "Cookies does not contain required refresh token."));
             }
 
@@ -70,6 +69,9 @@ namespace Onion.Web.Controllers
             var refreshToken = Request.Cookies[TokenCookieKey];
             var cmd = new RefreshTokenCommand(ipAddress, refreshToken);
             var result = await Mediator.Send(cmd);
+
+            if (!result.Succeeded)
+                return Unauthorized(result);
 
             return Ok(result);
         }

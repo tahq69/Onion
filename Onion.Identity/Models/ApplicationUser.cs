@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Onion.Application.DTOs.Account;
 using Onion.Domain.Common;
+using Onion.Domain.Entities;
 
 namespace Onion.Identity.Models
 {

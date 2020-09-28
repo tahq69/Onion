@@ -15,9 +15,9 @@ namespace Onion.Application.Features.ProductFeatures.Commands
 
         public class CreateProductHandler : IRequestHandler<CreateProductCommand, long>
         {
-            private readonly IRepository<Product> _repository;
+            private readonly IRepository<Product, long> _repository;
 
-            public CreateProductHandler(IRepository<Product> repository)
+            public CreateProductHandler(IRepository<Product, long> repository)
             {
                 _repository = repository;
             }

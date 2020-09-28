@@ -115,5 +115,25 @@ namespace Onion.Web.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             cookies.Any(x => x.StartsWith("refreshToken=")).Should().BeTrue();
         }
+        
+
+        [Fact, Trait("Category", "Integration")]
+        public async Task AccountController_AuthenticateAsync_CookiesTokenIsNotUserToken()
+        {
+            // Arrange
+            HttpClient client = Factory.CreateClient();
+            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            HttpContent sut = ToJsonContent(model);
+
+            // Act
+            var response = await client.PostAsync("/api/Account/Authenticate", sut);
+            var content = await ReadResponseContent<Response<AuthenticationResult>>(response);
+            var cookies = response.Headers.SingleOrDefault(header => header.Key == "Set-Cookie").Value;
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            cookies.Any((string x) => x.StartsWith("refreshToken=")).Should().BeTrue();
+            cookies.Any((string x) => x.StartsWith($"refreshToken={content.Data.Token}")).Should().BeFalse();
+        }
     }
 }

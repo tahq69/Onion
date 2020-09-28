@@ -1,7 +1,7 @@
 ﻿using System;
 using Onion.Application.DTOs;
 
-namespace Onion.Application.Features.ProductFeatures.Commands
+namespace Onion.Application.Interfaces
 {
     public interface IPageUriService
     {

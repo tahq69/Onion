@@ -16,9 +16,9 @@ namespace Onion.Application.Features.ProductFeatures.Commands
 
         public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, long>
         {
-            private readonly IRepository<Product> _repository;
+            private readonly IRepository<Product, long> _repository;
 
-            public UpdateProductHandler(IRepository<Product> repository)
+            public UpdateProductHandler(IRepository<Product, long> repository)
             {
                 _repository = repository;
             }

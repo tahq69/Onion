@@ -15,9 +15,9 @@ namespace Onion.Application.Features.ProductFeatures.Commands
         public class GetProductsHandler : PaginationHandler,
             IRequestHandler<GetProductsCommand, PagedResponse<ICollection<Product>>>
         {
-            private readonly IRepository<Product> _products;
+            private readonly IRepository<Product, long> _products;
 
-            public GetProductsHandler(IRepository<Product> products, IPageUriService pageUri)
+            public GetProductsHandler(IRepository<Product, long> products, IPageUriService pageUri)
                 : base(pageUri)
             {
                 _products = products;

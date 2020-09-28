@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
-using Onion.Application.DTOs.Account;
+using Onion.Domain.Entities;
 using Onion.Identity.Models;
 
 namespace Onion.Identity.Interfaces

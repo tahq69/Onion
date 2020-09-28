@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		.config\dotnet-tools.json = .config\dotnet-tools.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onion.Identity", "Onion.Identity\Onion.Identity.csproj", "{9F0A9C49-6D58-4577-8992-511B43DE8E2C}"

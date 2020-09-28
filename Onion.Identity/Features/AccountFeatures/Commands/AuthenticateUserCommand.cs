@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Onion.Application.DTOs;
 using Onion.Application.DTOs.Account;
+using Onion.Domain.Entities;
+using Onion.Identity.Contexts;
 using Onion.Identity.Interfaces;
 using Onion.Identity.Models;
 
@@ -40,6 +44,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
         {
             private readonly ILogger<AuthenticateUserHandler> _logger;
             private readonly IJwtService _jwt;
+            private readonly IUserRepository _users;
             private readonly UserManager<ApplicationUser> _userManager;
             private readonly SignInManager<ApplicationUser> _signInManager;
 
@@ -48,16 +53,19 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
             /// </summary>
             /// <param name="logger">Service specific logger instance.</param>
             /// <param name="jwt">JWT authentication service.</param>
+            /// <param name="users">Users data repository.</param>
             /// <param name="userManager">User record manager.</param>
             /// <param name="signInManager">User sign in manager.</param>
             public AuthenticateUserHandler(
                 ILogger<AuthenticateUserHandler> logger,
                 IJwtService jwt,
+                IUserRepository users,
                 UserManager<ApplicationUser> userManager,
                 SignInManager<ApplicationUser> signInManager)
             {
                 _logger = logger;
                 _jwt = jwt;
+                _users = users;
                 _userManager = userManager;
                 _signInManager = signInManager;
             }
@@ -95,7 +103,9 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 JwtSecurityToken jwtToken = await _jwt.GenerateJwtToken(user);
                 string token = _jwt.WriteToken(jwtToken);
                 IList<string> roles = await _userManager.GetRolesAsync(user);
+
                 RefreshToken refreshToken = _jwt.GenerateRefreshToken(request.IpAddress);
+                await _users.AddRefreshToken(user.Id, refreshToken, ct);
 
                 var response = new AuthenticationResult
                 {
@@ -111,7 +121,8 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 return new Response<AuthenticationResult>(response, $"Authenticated {user.UserName}");
             }
 
-            private static Response<AuthenticationResult> InvalidCredentials(string message = "Invalid credentials provided.") =>
+            private Response<AuthenticationResult> InvalidCredentials(
+                string message = "Invalid credentials provided.") =>
                 new Response<AuthenticationResult>
                 {
                     Succeeded = false,

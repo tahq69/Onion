@@ -85,13 +85,4 @@ namespace Onion.Data.Repositories
         public Task<int> CountAsync() =>
             Entities.CountAsync();
     }
-
-    public class Repository<TEntity> : Repository<TEntity, long>
-        where TEntity : BaseEntity
-    {
-        public Repository(IAppDbContext context)
-            : base(context)
-        {
-        }
-    }
 }

@@ -17,6 +17,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Onion.Domain.Settings;
 using Onion.Identity.Interfaces;
+using Onion.Identity.Repositories;
 using IdentityDbContext = Onion.Identity.Contexts.IdentityDbContext;
 
 namespace Onion.Identity
@@ -50,6 +51,7 @@ namespace Onion.Identity
                 .AddDefaultTokenProviders();
 
             services.AddTransient<IJwtService, JwtService>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             services.Configure<JwtSettings>(configuration.GetSection("JWTSettings"));
             services.AddAuthentication(options =>

@@ -12,9 +12,9 @@ namespace Onion.Application.Features.ProductFeatures.Queries
 
         public class GetByIdHandler : IRequestHandler<GetProductByIdQuery, Product>
         {
-            private readonly IRepository<Product> _repository;
+            private readonly IRepository<Product, long> _repository;
 
-            public GetByIdHandler(IRepository<Product> repository)
+            public GetByIdHandler(IRepository<Product, long> repository)
             {
                 _repository = repository;
             }

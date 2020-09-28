@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Onion.Application.DTOs;
 using Onion.Application.Features.ProductFeatures.Commands;
+using Onion.Application.Interfaces;
 
 namespace Onion.Web.Services
 {
