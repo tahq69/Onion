@@ -62,7 +62,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "invalid password" };
+            var model = new AuthenticationRequest { Email = "unit-test-3@example.com", Password = "invalid password" };
             HttpContent sut = ToJsonContent(model);
 
             // Act
@@ -83,7 +83,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            var model = new AuthenticationRequest { Email = "unit-test-4@example.com", Password = "P@ssw0rd!" };
             HttpContent sut = ToJsonContent(model);
 
             // Act
@@ -95,8 +95,8 @@ namespace Onion.Web.IntegrationTests.Controllers
             content.Succeeded.Should().BeTrue();
             content.Errors.Should().BeNull();
             content.Data.Token.Should().NotBeNullOrWhiteSpace();
-            content.Data.Email.Should().Be("superadmin@gmail.com");
-            content.Data.UserName.Should().Be("superadmin");
+            content.Data.Email.Should().Be("unit-test-4@example.com");
+            content.Data.UserName.Should().Be("unit-test-4");
         }
 
         [Fact, Trait("Category", "Integration")]
@@ -104,7 +104,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            var model = new AuthenticationRequest { Email = "unit-test-5@example.com", Password = "P@ssw0rd!" };
             HttpContent sut = ToJsonContent(model);
 
             // Act
@@ -121,7 +121,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            var model = new AuthenticationRequest { Email = "unit-test-1@example.com", Password = "P@ssw0rd!" };
             HttpContent sut = ToJsonContent(model);
 
             // Act

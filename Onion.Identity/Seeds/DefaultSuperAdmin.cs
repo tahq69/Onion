@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace Onion.Identity.Seeds
 {
+    /// <summary>
+    /// Super-admin user seeder.
+    /// </summary>
     public static class DefaultSuperAdmin
     {
-        public static async Task SeedAsync(UserManager<ApplicationUser> userManager,
+        /// <summary>
+        /// Seed super-admin user.
+        /// </summary>
+        /// <param name="userManager">Application user manager.</param>
+        /// <param name="roleManager">Application role manager.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task SeedAsync(
+            UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager)
         {
-            //Seed Default User
             var defaultUser = new ApplicationUser
             {
                 Id = "63a4a47f-8e94-4650-b7a3-324f5f799ad8",
@@ -20,7 +29,7 @@ namespace Onion.Identity.Seeds
                 FirstName = "Mukesh",
                 LastName = "Murugan",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
             };
 
             if (userManager.Users.All(u => u.Id != defaultUser.Id))

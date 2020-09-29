@@ -75,8 +75,7 @@ namespace Onion.Web.IntegrationTests
                 Task.Run(async () =>
                 {
                     await Identity.Seeds.DefaultRoles.SeedAsync(userManager, roleManager);
-                    await Identity.Seeds.DefaultSuperAdmin.SeedAsync(userManager, roleManager);
-                    await Identity.Seeds.DefaultBasicUser.SeedAsync(userManager, roleManager);
+                    await Identity.Seeds.UnitTestUsers.SeedAsync(userManager, roleManager);
                 }).Wait();
             });
 

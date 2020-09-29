@@ -6,9 +6,20 @@ using System.Threading.Tasks;
 
 namespace Onion.Identity.Seeds
 {
+    /// <summary>
+    /// Application basic user seeder.
+    /// </summary>
     public static class DefaultBasicUser
     {
-        public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        /// <summary>
+        /// Seed basic user.
+        /// </summary>
+        /// <param name="userManager">Application user manager.</param>
+        /// <param name="roleManager">Application role manager.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task SeedAsync(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager)
         {
             // Seed Default User
             var defaultUser = new ApplicationUser
@@ -19,7 +30,7 @@ namespace Onion.Identity.Seeds
                 FirstName = "John",
                 LastName = "Doe",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
             };
 
             if (userManager.Users.All(u => u.Id != defaultUser.Id))

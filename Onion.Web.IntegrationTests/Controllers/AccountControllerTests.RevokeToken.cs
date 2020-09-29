@@ -20,7 +20,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
+            string token = await client.AddAuthentication(this, "unit-test-12@example.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = null });
 
             // Act
@@ -38,7 +38,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
+            string token = await client.AddAuthentication(this, "unit-test-13@example.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = "invalid" });
 
             // Act
@@ -57,8 +57,8 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            string token = await client.AddAuthentication(this, "superadmin@gmail.com");
-            string refreshToken = await CreateRefreshToken("superadmin@gmail.com");
+            string token = await client.AddAuthentication(this, "unit-test-14@example.com");
+            string refreshToken = await CreateRefreshToken("unit-test-15@example.com");
             HttpContent body = ToJsonContent(new RevokeTokenRequest { Token = refreshToken });
 
             // Act

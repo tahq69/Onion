@@ -21,13 +21,13 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            ApplicationUser user = await this.FindUser("superadmin@gmail.com");
+            ApplicationUser user = await this.FindUser("unit-test-10@example.com");
             string token = await GeneratePasswordChangeToken(user);
             HttpContent request = ToJsonContent(new ResetPasswordRequest
             {
-                Email = "superadmin@gmail.com",
-                Password = "P@ssw0rd!",
-                ConfirmPassword = "P@ssw0rd!",
+                Email = "unit-test-10@example.com",
+                Password = "P@$$w0rd!",
+                ConfirmPassword = "P@$$w0rd!",
                 Token = token,
             });
 

@@ -28,6 +28,17 @@ namespace Onion.Web.Controllers
 
         private string? TokenCookie => Request.Cookies[TokenCookieKey];
 
+        private string? IpAddress
+        {
+            get
+            {
+                if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                    return Request.Headers["X-Forwarded-For"];
+
+                return HttpContext.Connection.RemoteIpAddress?.ToString();
+            }
+        }
+
         /// <summary>
         /// Authenticate user.
         /// </summary>
@@ -94,7 +105,7 @@ namespace Onion.Web.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Response<bool>>> RevokeTokenAsync(RevokeTokenRequest request)
+        public async Task<ActionResult<Response<bool>>> RevokeTokenAsync(RevokeTokenRequest? request)
         {
             var token = request?.Token;
             if (string.IsNullOrWhiteSpace(token) && HasTokenCookie)
@@ -108,8 +119,7 @@ namespace Onion.Web.Controllers
                     "Token is required"));
             }
 
-            var ipAddress = GenerateIpAddress();
-            Response<bool> result = await Mediator.Send(new RevokeTokenCommand(token, ipAddress));
+            Response<bool> result = await Mediator.Send(new RevokeTokenCommand(token, IpAddress));
 
             if (!result.Succeeded)
                 return NotFound(result);

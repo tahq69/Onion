@@ -34,7 +34,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            var model = new AuthenticationRequest { Email = "superadmin@gmail.com", Password = "P@ssw0rd!" };
+            var model = new AuthenticationRequest { Email = "unit-test-2@example.com", Password = "P@ssw0rd!" };
             HttpContent sut = ToJsonContent(model);
             HttpContent body = ToJsonContent("");
 

@@ -11,7 +11,7 @@ namespace Onion.Application.Tests.Exceptions
 {
     public partial class AccountExceptionTests
     {
-        [Fact]
+        [Fact, Trait("Category", "Integration")]
         public void AccountException_Constructor_WithSerializableProperties()
         {
             // Arrange

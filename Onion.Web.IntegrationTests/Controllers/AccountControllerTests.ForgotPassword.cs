@@ -21,7 +21,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            HttpContent request = ToJsonContent(new ForgotPasswordRequest { Email = "superadmin@gmail.com" });
+            HttpContent request = ToJsonContent(new ForgotPasswordRequest { Email = "unit-test-9@example.com" });
 
             // Act
             var response = await client.PostAsync("/api/account/forgot-password", request);

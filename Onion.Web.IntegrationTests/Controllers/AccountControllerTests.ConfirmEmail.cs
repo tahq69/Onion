@@ -21,7 +21,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            ApplicationUser user = await this.FindUser("superadmin@gmail.com");
+            ApplicationUser user = await this.FindUser("unit-test-6@example.com");
             string code = await GenerateEmailConfirmationToken(user);
 
             var requestUri = "/api/account/confirm-email";
@@ -42,7 +42,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            ApplicationUser user = await this.FindUser("superadmin@gmail.com");
+            ApplicationUser user = await this.FindUser("unit-test-7@example.com");
             string code = "invalid code value";
 
             var requestUri = "/api/account/confirm-email";
@@ -63,7 +63,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
-            ApplicationUser user = await this.FindUser("superadmin@gmail.com");
+            ApplicationUser user = await this.FindUser("unit-test-8@example.com");
             string code = await GenerateEmailConfirmationToken(user);
 
             var requestUri = "/api/account/confirm-email";
