@@ -16,7 +16,7 @@ namespace Onion.Application.Tests.Exceptions
         {
             // Arrange
             AccountException ex = new AccountException("Message", "Account");
-            AccountException deserializedEx = null;
+            AccountException deserializedEx;
 
             // Assert
             ex.Message.Should().Be("Message");
@@ -36,7 +36,7 @@ namespace Onion.Application.Tests.Exceptions
                 ms.Seek(0, 0);
 
                 // Fill exception with de-serialized one
-                deserializedEx = (AccountException)bf.Deserialize(ms);
+                deserializedEx = (AccountException) bf.Deserialize(ms);
             }
 
             // Assert

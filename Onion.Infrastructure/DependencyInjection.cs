@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Onion.Application.Interfaces;
 using Onion.Domain.Settings;
 using Onion.Infrastructure.Services;
-using Onion.Shared.Data;
 
 namespace Onion.Infrastructure
 {

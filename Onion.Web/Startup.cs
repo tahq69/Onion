@@ -14,7 +14,6 @@ using Onion.Application.Interfaces;
 using Onion.Data;
 using Onion.Identity;
 using Onion.Infrastructure;
-using Onion.Shared.Data;
 using Onion.Web.Extensions;
 using Onion.Web.Middlewares;
 using Onion.Web.Services;

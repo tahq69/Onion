@@ -194,11 +194,13 @@ namespace Onion.Web.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Response<string>>> ResetPassword(ResetPasswordRequest model)
         {
+            AssertModelState();
+
             var result = await Mediator.Send(new ResetPasswordCommand
             {
-                Email = model.Email,
-                Password = model.Password,
-                Token = model.Token,
+                Email = model.Email ?? throw new ArgumentNullException(nameof(model.Email)),
+                Password = model.Password ?? throw new ArgumentNullException(nameof(model.Password)),
+                Token = model.Token ?? throw new ArgumentNullException(nameof(model.Token)),
             });
 
             if (result.Succeeded)
