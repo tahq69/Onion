@@ -13,7 +13,7 @@ namespace Onion.Web.Controllers
         /// Application basic information.
         /// </summary>
         /// <returns>Application meta information.</returns>
-        [HttpGet("/info")]
+        [HttpGet("/api/info")]
         public ActionResult<string> Info()
         {
             var assembly = typeof(Startup).Assembly;

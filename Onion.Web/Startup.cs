@@ -75,6 +75,9 @@ namespace Onion.Web
         /// <param name="env">The web host environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<CorrelationIdMiddleware>();
+            app.UseMiddleware<CorrelationIdLoggingMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
