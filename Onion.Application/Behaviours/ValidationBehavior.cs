@@ -34,7 +34,7 @@ namespace Onion.Application.Behaviours
         /// <param name="request">The request model.</param>
         /// <param name="ct">The asynchronous operation cancellation token.</param>
         /// <param name="next">The next pipeline delegate.</param>
-        /// <returns>Next delegate result</returns>
+        /// <returns>Next delegate result.</returns>
         /// <exception cref="Exceptions.ValidationException">
         /// When validation of the model fails.
         /// </exception>

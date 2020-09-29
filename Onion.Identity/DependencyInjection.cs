@@ -13,6 +13,7 @@ using Onion.Identity.Services;
 using System;
 using System.Reflection;
 using System.Text;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Onion.Domain.Settings;
@@ -52,6 +53,7 @@ namespace Onion.Identity
                         }));
             }
 
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()

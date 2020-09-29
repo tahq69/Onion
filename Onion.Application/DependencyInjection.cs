@@ -1,19 +1,24 @@
-﻿using FluentValidation;
+﻿using System.Reflection;
+using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Onion.Application.Behaviours;
-using System;
-using System.Reflection;
 
 namespace Onion.Application
 {
+    /// <summary>
+    /// Application business logic DI.
+    /// </summary>
     public static class DependencyInjection
     {
-        public static void AddApplicationInfrastructure(this IServiceCollection services)
+        /// <summary>
+        /// Adds all required services for application business logic module.
+        /// </summary>
+        /// <param name="services">DI service.</param>
+        /// <param name="configuration">Application configuration.</param>
+        public static void AddApplicationInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

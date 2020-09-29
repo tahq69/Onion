@@ -51,7 +51,7 @@ namespace Onion.Web
             services.AddInfrastructure(Configuration);
             services.AddIdentityInfrastructure(Configuration);
             services.AddDataInfrastructure(Configuration);
-            services.AddApplicationInfrastructure();
+            services.AddApplicationInfrastructure(Configuration);
 
             services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>();
             services.AddSingleton<IApiUriService>(provider =>

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Onion.Application.DTOs;
-using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
 using Onion.Identity.Interfaces;
 using Onion.Identity.Models;
@@ -58,10 +56,8 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
             public async Task<Response<string>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByIdAsync(request.UserId);
-                if (user is null)
-                    throw ValidationException.FromPropError(nameof(request.UserId), "Invalid user provided.");
-
-                var code = ExtractCode(request);
+                var bytes = WebEncoders.Base64UrlDecode(request.Code);
+                var code = Encoding.UTF8.GetString(bytes);
 
                 IdentityResult? result = await _userManager.ConfirmEmailAsync(user, code);
 
@@ -76,21 +72,6 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                 return new Response<string>(
                     user.Id,
                     $"Account Confirmed for {user.Email}. You can now use the {uri} endpoint.");
-            }
-
-            private string ExtractCode(ConfirmEmailCommand request)
-            {
-                try
-                {
-                    var bytes = WebEncoders.Base64UrlDecode(request.Code);
-                    return Encoding.UTF8.GetString(bytes);
-                }
-                catch (System.FormatException)
-                {
-                    throw ValidationException.FromPropError(
-                        nameof(request.Code),
-                        "Invalid verification code provided.");
-                }
             }
         }
     }

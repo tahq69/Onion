@@ -59,7 +59,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         }
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_ConfirmEmail_FailsOnInvalidEmail()
+        public async Task AccountController_ConfirmEmail_FailsOnInvalidUserId()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
