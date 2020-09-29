@@ -190,20 +190,20 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Change password.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        /// <param name="request">Reset password request model.</param>
+        /// <returns>Password reset status message.</returns>
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Response<string>>> ResetPassword(ResetPasswordRequest model)
+        public async Task<StringResponse> ResetPassword(ResetPasswordRequest request)
         {
             AssertModelState();
 
             var result = await Mediator.Send(new ResetPasswordCommand
             {
-                Email = model.Email ?? throw new ArgumentNullException(nameof(model.Email)),
-                Password = model.Password ?? throw new ArgumentNullException(nameof(model.Password)),
-                Token = model.Token ?? throw new ArgumentNullException(nameof(model.Token)),
+                Email = request.Email ?? throw new ArgumentNullException(nameof(request.Email)),
+                Password = request.Password ?? throw new ArgumentNullException(nameof(request.Password)),
+                Token = request.Token ?? throw new ArgumentNullException(nameof(request.Token)),
             });
 
             if (result.Succeeded)
@@ -219,9 +219,8 @@ namespace Onion.Web.Controllers
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];
 
-            return HttpContext.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
+            return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         }
-
 
         private void SetTokenCookie(string token)
         {

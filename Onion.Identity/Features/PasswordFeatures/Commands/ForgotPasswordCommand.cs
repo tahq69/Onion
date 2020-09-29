@@ -48,9 +48,8 @@ namespace Onion.Identity.Features.PasswordFeatures.Commands
             /// <inheritdoc />
             public async Task<Response<string>> Handle(ForgotPasswordCommand request, CancellationToken ct)
             {
-                ApplicationUser account = await _userManager.FindByEmailAsync(request.Email);
-
-                string code = await _userManager.GeneratePasswordResetTokenAsync(account);
+                ApplicationUser user = await _userManager.FindByEmailAsync(request.Email);
+                string code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var queryParams = new Dictionary<string, string> { { "token", code } };
                 var uri = _apiUri.GetUri("api/account/reset-password/", queryParams.ToArray());
 
