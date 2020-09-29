@@ -60,5 +60,9 @@ namespace Onion.Identity.Repositories
         /// <inheritdoc/>
         public Task<bool> ExistsById(string userId, CancellationToken ct) =>
             _dbContext.Users.AnyAsync(u => u.Id.Equals(userId), ct);
+
+        /// <inheritdoc/>
+        public Task<bool> ExistsByEmail(string userEmail, CancellationToken ct) =>
+            _dbContext.Users.AnyAsync(u => u.Email.Equals(userEmail), ct);
     }
 }

@@ -11,6 +11,7 @@ using Onion.Identity.Features.AccountFeatures.Commands;
 using Onion.Identity.Features.PasswordFeatures.Commands;
 using Onion.Identity.Features.TokenFeatures;
 using Onion.Web.Models.Account;
+using StringResponse = Microsoft.AspNetCore.Mvc.ActionResult<Onion.Application.DTOs.Response<string>>;
 
 namespace Onion.Web.Controllers
 {
@@ -124,7 +125,7 @@ namespace Onion.Web.Controllers
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Response<string>>> RegisterAsync(RegisterRequest request)
+        public async Task<StringResponse> RegisterAsync(RegisterRequest request)
         {
             AssertModelState();
 
@@ -152,7 +153,9 @@ namespace Onion.Web.Controllers
         [HttpGet("confirm-email")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
+        public async Task<StringResponse> ConfirmEmailAsync(
+            [FromQuery] string userId,
+            [FromQuery] string code)
         {
             var result = await Mediator.Send(new ConfirmEmailCommand
             {
@@ -166,22 +169,22 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Send password renew link to user email.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
+        /// <param name="request">Forgot password request model.</param>
+        /// <returns>Forgot password email sent details.</returns>
         [HttpPost("forgot-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        public async Task<StringResponse> ForgotPasswordAsync(ForgotPasswordRequest request)
         {
             var result = await Mediator.Send(new ForgotPasswordCommand
             {
-                Email = model.Email,
+                Email = request.Email ?? throw new ArgumentNullException(nameof(request.Email)),
             });
 
-            if (result.Succeeded)
-                return Ok(result);
+            if (!result.Succeeded)
+                return BadRequest(result);
 
-            return BadRequest(result);
+            return Ok(result);
         }
 
         /// <summary>
@@ -215,8 +218,8 @@ namespace Onion.Web.Controllers
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];
-            else
-                return HttpContext.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
+
+            return HttpContext.Connection.RemoteIpAddress?.MapToIPv4()?.ToString();
         }
 
 

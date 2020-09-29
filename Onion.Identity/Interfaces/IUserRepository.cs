@@ -51,6 +51,14 @@ namespace Onion.Identity.Interfaces
         /// <returns><c>true</c> if <param name="userId"/> exists in database, otherwise <c>false</c>.</returns>
         Task<bool> ExistsById(string userId, CancellationToken ct);
 
+        /// <summary>
+        /// Determine whenever user exists in database by email address.
+        /// </summary>
+        /// <param name="userEmail">User account email address.</param>
+        /// <param name="ct">Asynchronous operation cancellation token.</param>
+        /// <returns><c>true</c> if <param name="userEmail"/> exists in database, otherwise <c>false</c>.</returns>
+        Task<bool> ExistsByEmail(string userEmail, CancellationToken ct);
+
         #region Overloads without CancellationToken
 
         /// <inheritdoc cref="SingleByRefreshToken(string, CancellationToken)"/>
@@ -72,6 +80,10 @@ namespace Onion.Identity.Interfaces
         /// <inheritdoc cref="ExistsById(string, CancellationToken)"/>
         Task ExistsById(string userId) =>
             ExistsById(userId, CancellationToken.None);
+
+        /// <inheritdoc cref="ExistsByEmail(string, CancellationToken)"/>
+        Task ExistsByEmail(string userEmail) =>
+            ExistsByEmail(userEmail, CancellationToken.None);
 
         #endregion
     }

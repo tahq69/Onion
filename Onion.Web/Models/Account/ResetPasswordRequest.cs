@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Onion.Application.DTOs.Account
+namespace Onion.Web.Models.Account
 {
     public class ResetPasswordRequest
     {

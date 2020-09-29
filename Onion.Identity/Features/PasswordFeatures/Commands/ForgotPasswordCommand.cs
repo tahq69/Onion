@@ -1,56 +1,65 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Onion.Identity.Models;
-using Onion.Infrastructure.Features.EmailFeatures.Commands;
-using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Onion.Application.DTOs;
+using Onion.Application.Interfaces;
+using Onion.Identity.Models;
 
 namespace Onion.Identity.Features.PasswordFeatures.Commands
 {
+    /// <summary>
+    /// Forgot password command.
+    /// </summary>
     public class ForgotPasswordCommand : IRequest<Response<string>>
     {
+        /// <summary>
+        /// Gets or sets user account email address.
+        /// </summary>
         public string Email { get; set; } = null!;
 
-        public string Origin { get; set; } = null!;
-
+        /// <summary>
+        /// Forgot password command handler.
+        /// </summary>
         public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand, Response<string>>
         {
             private readonly UserManager<ApplicationUser> _userManager;
-            private readonly IMediator _mediator;
+            private readonly IApiUriService _apiUri;
+            private readonly IEmailService _email;
 
-            public ForgotPasswordHandler(UserManager<ApplicationUser> userManager, IMediator mediator)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ForgotPasswordHandler"/> class.
+            /// </summary>
+            /// <param name="userManager">Application user manager.</param>
+            /// <param name="apiUri">API URI service.</param>
+            /// <param name="email">Email service.</param>
+            public ForgotPasswordHandler(
+                UserManager<ApplicationUser> userManager,
+                IApiUriService apiUri,
+                IEmailService email)
             {
                 _userManager = userManager;
-                _mediator = mediator;
+                _apiUri = apiUri;
+                _email = email;
             }
 
+            /// <inheritdoc />
             public async Task<Response<string>> Handle(ForgotPasswordCommand request, CancellationToken ct)
             {
                 ApplicationUser account = await _userManager.FindByEmailAsync(request.Email);
 
-                if (account == null)
-                {
-                    return new Response<string>
-                    {
-                        Succeeded = false,
-                        Message = "Invalid e-mail address",
-                    };
-                }
-
                 string code = await _userManager.GeneratePasswordResetTokenAsync(account);
-                var route = "api/account/reset-password/";
-                var endpointUri = new Uri(string.Concat($"{request.Origin}/", route));
+                var queryParams = new Dictionary<string, string> { { "token", code } };
+                var uri = _apiUri.GetUri("api/account/reset-password/", queryParams.ToArray());
 
-                await _mediator.Send(new SendEmailCommand
-                {
-                    Body = $"You reset token is - {code}. Please reset password here: {endpointUri}",
-                    To = request.Email,
-                    Subject = $"{request.Origin} Password Reset",
-                });
+                await _email.Send(
+                    request.Email,
+                    "Password Reset",
+                    $"You reset token is - {code}. Please reset password here: {uri}");
 
-                return new Response<string>(null, "E-mail sent.");
+                return new Response<string>("E-mail sent.", "E-mail sent.");
             }
         }
     }
