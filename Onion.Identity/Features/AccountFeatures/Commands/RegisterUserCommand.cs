@@ -11,6 +11,7 @@ using Onion.Application.DTOs;
 using Onion.Application.Enums;
 using Onion.Application.Exceptions;
 using Onion.Application.Interfaces;
+using Onion.Identity.Interfaces;
 using Onion.Identity.Models;
 using Onion.Infrastructure.Extensions;
 using Onion.Infrastructure.Features.EmailFeatures.Commands;
@@ -54,6 +55,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
         {
             private readonly IEmailService _email;
             private readonly IApiUriService _apiUri;
+            private readonly IIdentityResultParser _identityParser;
             private readonly UserManager<ApplicationUser> _userManager;
 
             /// <summary>
@@ -61,14 +63,17 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
             /// </summary>
             /// <param name="email">Email service.</param>
             /// <param name="apiUri">The API URL service.</param>
+            /// <param name="identityParser">Identity result parser.</param>
             /// <param name="userManager">Application user manager.</param>
             public RegisterUserHandler(
                 IEmailService email,
                 IApiUriService apiUri,
+                IIdentityResultParser identityParser,
                 UserManager<ApplicationUser> userManager)
             {
                 _email = email;
                 _apiUri = apiUri;
+                _identityParser = identityParser;
                 _userManager = userManager;
             }
 
@@ -101,18 +106,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
 
                 var result = await _userManager.CreateAsync(user, request.Password);
                 if (!result.Succeeded)
-                {
-                    var errors = new Dictionary<string, ICollection<string>>();
-                    foreach (IdentityError? error in result.Errors)
-                    {
-                        if (errors.ContainsKey(error.Code))
-                            errors[error.Code].Add(error.Description);
-                        else
-                            errors.Add(error.Code, new[] { error.Description });
-                    }
-
-                    throw new ValidationException(errors);
-                }
+                    throw new ValidationException(_identityParser.Errors(result));
 
                 await _userManager.AddToRoleAsync(user, Roles.Basic.ToString());
                 await SendVerificationEmail(user);

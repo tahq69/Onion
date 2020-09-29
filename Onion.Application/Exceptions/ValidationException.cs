@@ -62,6 +62,18 @@ namespace Onion.Application.Exceptions
         /// </summary>
         public IDictionary<string, ICollection<string>> Errors { get; } = new Dictionary<string, ICollection<string>>();
 
+        /// <summary>
+        /// Creates validation error exception with single property and messages in it.
+        /// </summary>
+        /// <param name="propName">Failed parameter name.</param>
+        /// <param name="messages">The failure messages.</param>
+        /// <returns>Validation exception with error.</returns>
+        public static ValidationException FromPropError(string propName, params string[] messages) =>
+            new ValidationException(new Dictionary<string, ICollection<string>>
+            {
+                { propName, messages },
+            });
+
         /// <inheritdoc cref="Exception.GetObjectData"/>
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

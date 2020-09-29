@@ -14,7 +14,7 @@ namespace Onion.Web.IntegrationTests.Controllers
     public partial class AccountControllerTests
     {
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_FailsOnInvalidModel()
+        public async Task AccountController_Authenticate_FailsOnInvalidModel()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
@@ -36,7 +36,7 @@ namespace Onion.Web.IntegrationTests.Controllers
 
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_FailsOnInvalidCredentials()
+        public async Task AccountController_Authenticate_FailsOnInvalidCredentials()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
@@ -58,7 +58,7 @@ namespace Onion.Web.IntegrationTests.Controllers
 
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_FailsOnInvalidPassword()
+        public async Task AccountController_Authenticate_FailsOnInvalidPassword()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
@@ -79,7 +79,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         }
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_ReturnsTokenOnValidCredentials()
+        public async Task AccountController_Authenticate_ReturnsTokenOnValidCredentials()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
@@ -100,7 +100,7 @@ namespace Onion.Web.IntegrationTests.Controllers
         }
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_SetsTokenToCookiesOnValidCredentials()
+        public async Task AccountController_Authenticate_SetsTokenToCookiesOnValidCredentials()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();
@@ -115,10 +115,9 @@ namespace Onion.Web.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             cookies.Any(x => x.StartsWith("refreshToken=")).Should().BeTrue();
         }
-        
 
         [Fact, Trait("Category", "Integration")]
-        public async Task AccountController_AuthenticateAsync_CookiesTokenIsNotUserToken()
+        public async Task AccountController_Authenticate_CookiesTokenIsNotUserToken()
         {
             // Arrange
             HttpClient client = Factory.CreateClient();

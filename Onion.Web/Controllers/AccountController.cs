@@ -146,10 +146,12 @@ namespace Onion.Web.Controllers
         /// <summary>
         /// Confirm user email.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
+        /// <param name="userId">User identifier.</param>
+        /// <param name="code">Email confirmation code.</param>
+        /// <returns>Login URL if email is confirmed.</returns>
         [HttpGet("confirm-email")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
         {
             var result = await Mediator.Send(new ConfirmEmailCommand

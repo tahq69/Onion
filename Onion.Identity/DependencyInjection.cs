@@ -22,8 +22,16 @@ using IdentityDbContext = Onion.Identity.Contexts.IdentityDbContext;
 
 namespace Onion.Identity
 {
+    /// <summary>
+    /// Identity module DI.
+    /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Adds all required services for identity module.
+        /// </summary>
+        /// <param name="services">DI service.</param>
+        /// <param name="configuration">Application configuration.</param>
         public static void AddIdentityInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration.GetValue<bool>("UseInMemoryDatabase"))
@@ -52,6 +60,7 @@ namespace Onion.Identity
 
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IIdentityResultParser, IdentityResultParser>();
 
             services.Configure<JwtSettings>(configuration.GetSection("JWTSettings"));
             services.AddAuthentication(options =>
@@ -74,7 +83,7 @@ namespace Onion.Identity
                         ValidAudience = configuration[$"JWTSettings:{nameof(JwtSettings.Audience)}"],
                         IssuerSigningKey =
                             new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JwtSettings.Key)}"]))
+                                Encoding.UTF8.GetBytes(configuration[$"JWTSettings:{nameof(JwtSettings.Key)}"])),
                     };
                     o.Events = new JwtBearerEvents()
                     {

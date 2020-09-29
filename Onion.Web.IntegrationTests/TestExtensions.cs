@@ -11,11 +11,11 @@ namespace Onion.Web.IntegrationTests
 {
     public static class TestExtensions
     {
-        public static async Task<string> AddAuthentication<TFixture>(
+        public static async Task<string> AddAuthentication<T>(
             this HttpClient client,
-            ControllerTest<TFixture> ctrl,
+            ControllerTest<T> ctrl,
             string userEmail)
-            where TFixture : InMemoryDatabaseAppFactory
+            where T : InMemoryDatabaseAppFactory
         {
             var token = await ctrl.CreateToken(userEmail);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -23,15 +23,19 @@ namespace Onion.Web.IntegrationTests
             return token;
         }
 
-        public static async Task<string> CreateToken<TFixture>(this ControllerTest<TFixture> ctrl, string userEmail)
-            where TFixture : InMemoryDatabaseAppFactory
+        public static async Task<string> CreateToken<T>(this ControllerTest<T> ctrl, string userEmail)
+            where T : InMemoryDatabaseAppFactory
         {
             IJwtService jwt = ctrl.Factory.Services.GetRequiredService<IJwtService>();
-            ApplicationUser user = await ctrl.Factory.Services
-                .GetRequiredService<UserManager<ApplicationUser>>()
-                .FindByEmailAsync(userEmail);
+            ApplicationUser user = await ctrl.FindUser(userEmail);
 
             return jwt.WriteToken(await jwt.GenerateJwtToken(user));
         }
+
+        public static Task<ApplicationUser> FindUser<T>(this ControllerTest<T> ctrl, string userEmail)
+            where T : InMemoryDatabaseAppFactory =>
+            ctrl.Factory.Services
+                .GetRequiredService<UserManager<ApplicationUser>>()
+                .FindByEmailAsync(userEmail);
     }
 }

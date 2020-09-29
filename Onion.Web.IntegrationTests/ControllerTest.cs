@@ -60,7 +60,7 @@ namespace Onion.Web.IntegrationTests
             catch (JsonSerializationException ex)
             {
                 var type = typeof(T).UserFriendlyName("Onion.");
-                var status = (int)response.StatusCode;
+                var status = (int) response.StatusCode;
                 throw new Exception($"{status}: Could not deserialize content to {type}: {content}", ex);
             }
         }
