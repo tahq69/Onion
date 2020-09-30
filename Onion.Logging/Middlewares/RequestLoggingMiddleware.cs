@@ -77,19 +77,9 @@ namespace Onion.Logging.Middlewares
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (predicates == null) throw new ArgumentNullException(nameof(predicates));
 
-            // Add controller name to logging hierarchy if available
-            ILogger logger = _logger;
+            // Add controller name to logging hierarchy if available.
+            ILogger logger = TryGetControllerLogger(context, _logger);
             string newLine = Environment.NewLine;
-
-            // Try to create controller specific logger instead of service specific.
-            Endpoint? endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
-            var descriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
-            if (descriptor != null)
-            {
-                string controllerName = descriptor.ControllerName;
-                string? service = typeof(RequestLoggingMiddleware).FullName;
-                logger = _loggerFactory.CreateLogger($"{service}.{controllerName}");
-            }
 
             HttpRequest req = context.Request;
             HttpResponse resp = context.Response;
@@ -208,6 +198,26 @@ namespace Onion.Logging.Middlewares
         protected virtual IStopwatch CreateStopwatch()
         {
             return new LoggingStopwatch();
+        }
+
+        /// <summary>
+        /// Try to create controller specific logger instead or use service specific.
+        /// </summary>
+        /// <param name="context">HTTP context.</param>
+        /// <param name="logger">Actual service logger.</param>
+        /// <returns>New controller specific logger or actual on, if could not resolve.</returns>
+        private ILogger TryGetControllerLogger(HttpContext context, ILogger logger)
+        {
+            Endpoint? endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+            var descriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
+            if (descriptor != null)
+            {
+                string controllerName = descriptor.ControllerName;
+                string? service = typeof(RequestLoggingMiddleware).FullName;
+                logger = _loggerFactory.CreateLogger($"{service}.{controllerName}");
+            }
+
+            return logger;
         }
 
         private void WriteHeaders(IEnumerable<KeyValuePair<string, StringValues>> headers, StringBuilder output)
