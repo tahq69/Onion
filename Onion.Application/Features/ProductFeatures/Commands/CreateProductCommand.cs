@@ -6,22 +6,48 @@ using Onion.Domain.Entities;
 
 namespace Onion.Application.Features.ProductFeatures.Commands
 {
+    /// <summary>
+    /// Create product command.
+    /// </summary>
     public class CreateProductCommand : IRequest<long>
     {
-        public string Name { get; set; }
-        public string Barcode { get; set; }
-        public string Description { get; set; }
+        /// <summary>
+        /// Gets or sets product name.
+        /// </summary>
+        public string Name { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets product barcode.
+        /// </summary>
+        public string Barcode { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets product description.
+        /// </summary>
+        public string Description { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets product rate.
+        /// </summary>
         public decimal Rate { get; set; }
 
+        /// <summary>
+        /// Create product command handler.
+        /// </summary>
         public class CreateProductHandler : IRequestHandler<CreateProductCommand, long>
         {
             private readonly IRepository<Product, long> _repository;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CreateProductHandler"/> class.
+            /// </summary>
+            /// <param name="repository">Product repository.</param>
             public CreateProductHandler(IRepository<Product, long> repository)
             {
                 _repository = repository;
             }
 
+            /// <inheritdoc/>
             public Task<long> Handle(CreateProductCommand command, CancellationToken cancellationToken)
             {
                 var product = new Product

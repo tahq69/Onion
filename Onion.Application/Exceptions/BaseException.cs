@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 
 namespace Onion.Application.Exceptions
 {
+    /// <summary>
+    /// Base application exception with additional constructors.
+    /// </summary>
     public abstract class BaseException : Exception
     {
         /// <summary>

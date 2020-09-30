@@ -10,8 +10,16 @@ using Onion.Data.Repositories;
 
 namespace Onion.Data
 {
+    /// <summary>
+    /// Data module DI.
+    /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Adds all required services for data module.
+        /// </summary>
+        /// <param name="services">DI service.</param>
+        /// <param name="configuration">Application configuration.</param>
         public static void AddDataInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration.GetValue<bool>("UseInMemoryDatabase"))

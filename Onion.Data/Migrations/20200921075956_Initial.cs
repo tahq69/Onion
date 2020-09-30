@@ -2,8 +2,12 @@
 
 namespace Onion.Data.Migrations
 {
+    /// <summary>
+    /// Initial database migration.
+    /// </summary>
     public partial class Initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -19,14 +23,12 @@ namespace Onion.Data.Migrations
                     Name = table.Column<string>(nullable: true),
                     Barcode = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    Rate = table.Column<decimal>(nullable: false)
+                    Rate = table.Column<decimal>(nullable: false),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Products", x => x.Id); });
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
