@@ -3,8 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Onion.Identity.Migrations
 {
+    /// <summary>
+    /// Initial database migration.
+    /// </summary>
     public partial class Initial : Migration
     {
+        /// <inheritdoc/>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -18,12 +22,9 @@ namespace Onion.Identity.Migrations
                     Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(nullable: true)
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Role", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Role", x => x.Id); });
 
             migrationBuilder.CreateTable(
                 name: "User",
@@ -46,12 +47,9 @@ namespace Onion.Identity.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true)
+                    LastName = table.Column<string>(nullable: true),
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_User", x => x.Id); });
 
             migrationBuilder.CreateTable(
                 name: "RoleClaims",
@@ -62,7 +60,7 @@ namespace Onion.Identity.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
+                    ClaimValue = table.Column<string>(nullable: true),
                 },
                 constraints: table =>
                 {
@@ -90,7 +88,7 @@ namespace Onion.Identity.Migrations
                     Revoked = table.Column<DateTime>(nullable: true),
                     RevokedByIp = table.Column<string>(nullable: true),
                     ReplacedByToken = table.Column<string>(nullable: true),
-                    ApplicationUserId = table.Column<string>(nullable: true)
+                    ApplicationUserId = table.Column<string>(nullable: true),
                 },
                 constraints: table =>
                 {
@@ -113,7 +111,7 @@ namespace Onion.Identity.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true)
+                    ClaimValue = table.Column<string>(nullable: true),
                 },
                 constraints: table =>
                 {
@@ -135,7 +133,7 @@ namespace Onion.Identity.Migrations
                     LoginProvider = table.Column<string>(nullable: false),
                     ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    UserId = table.Column<string>(nullable: false),
                 },
                 constraints: table =>
                 {
@@ -155,7 +153,7 @@ namespace Onion.Identity.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    RoleId = table.Column<string>(nullable: false)
+                    RoleId = table.Column<string>(nullable: false),
                 },
                 constraints: table =>
                 {
@@ -184,7 +182,7 @@ namespace Onion.Identity.Migrations
                     UserId = table.Column<string>(nullable: false),
                     LoginProvider = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
-                    Value = table.Column<string>(nullable: true)
+                    Value = table.Column<string>(nullable: true),
                 },
                 constraints: table =>
                 {
@@ -251,6 +249,7 @@ namespace Onion.Identity.Migrations
                 column: "RoleId");
         }
 
+        /// <inheritdoc/>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

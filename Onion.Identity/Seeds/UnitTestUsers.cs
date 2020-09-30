@@ -24,33 +24,26 @@ namespace Onion.Identity.Seeds
         {
             for (int i = 1; i < 50; i++)
             {
-                try
+                // Seed Default User
+                var defaultUser = new ApplicationUser
                 {
-                    // Seed Default User
-                    var defaultUser = new ApplicationUser
-                    {
-                        UserName = $"unit-test-{i}",
-                        Email = $"unit-test-{i}@example.com",
-                        FirstName = $"John-{i}",
-                        LastName = $"Doe-{i}",
-                        EmailConfirmed = true,
-                        PhoneNumberConfirmed = true,
-                        SecurityStamp = Guid.NewGuid().ToString(),
-                    };
+                    UserName = $"unit-test-{i}",
+                    Email = $"unit-test-{i}@example.com",
+                    FirstName = $"John-{i}",
+                    LastName = $"Doe-{i}",
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                };
 
-                    if (userManager.Users.All(u => u.UserName != defaultUser.UserName))
-                    {
-                        var user = await userManager.FindByEmailAsync(defaultUser.Email);
-                        if (user == null)
-                        {
-                            await userManager.CreateAsync(defaultUser, "P@ssw0rd!");
-                            await userManager.AddToRoleAsync(defaultUser, Roles.Basic.ToString());
-                        }
-                    }
-                }
-                catch (EntryPointNotFoundException ex)
+                if (userManager.Users.All(u => u.UserName != defaultUser.UserName))
                 {
-                    // Ignores
+                    var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                    if (user == null)
+                    {
+                        await userManager.CreateAsync(defaultUser, "P@ssw0rd!");
+                        await userManager.AddToRoleAsync(defaultUser, Roles.Basic.ToString());
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ namespace Onion.Identity.Interfaces
     public interface IJwtService
     {
         /// <summary>
-        /// Generate JWT Token for provided <param name="user" />.
+        /// Generate JWT Token for provided <paramref name="user" />.
         /// </summary>
         /// <param name="user">Application user.</param>
         /// <returns>JWT security token.</returns>

@@ -17,12 +17,21 @@ using Onion.Identity.Models;
 
 namespace Onion.Identity.Services
 {
+    /// <summary>
+    /// JWT service implementation.
+    /// </summary>
     public class JwtService : IJwtService
     {
         private readonly JwtSettings _jwtSettings;
         private readonly IDateTimeService _dateTime;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JwtService"/> class.
+        /// </summary>
+        /// <param name="jwtSettings">JWT service settings.</param>
+        /// <param name="dateTime">Date time service.</param>
+        /// <param name="userManager">Application user manager.</param>
         public JwtService(
             IOptions<JwtSettings> jwtSettings,
             IDateTimeService dateTime,
@@ -33,6 +42,7 @@ namespace Onion.Identity.Services
             _userManager = userManager;
         }
 
+        /// <inheritdoc />
         public async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -62,15 +72,17 @@ namespace Onion.Identity.Services
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
+                expires: DateTime.UtcNow.Add(_jwtSettings.Duration),
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
         }
 
+        /// <inheritdoc />
         public string WriteToken(JwtSecurityToken securityToken) =>
             new JwtSecurityTokenHandler().WriteToken(securityToken);
 
+        /// <inheritdoc />
         public RefreshToken GenerateRefreshToken(string? ipAddress) =>
             new RefreshToken
             {
