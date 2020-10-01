@@ -25,6 +25,7 @@ namespace Onion.Logging
 
             // TODO: add LongJsonContentSettings and initialize max length from this config.
             services.AddTransient<IRequestContentLogMiddleware, LongJsonContentMiddleware>();
+            services.AddTransient<IJsonContentBuilder, JsonContentBuilder>();
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using FluentAssertions;
 using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Middlewares;
+using Onion.Logging.Services;
 using Xunit;
 
 namespace Onion.Logging.Tests
@@ -17,7 +18,8 @@ namespace Onion.Logging.Tests
         public async Task LogContentFactory_PrepareBody_ProperlyHandlesMiddleware()
         {
             // Arrange
-            var middlewares = new List<IRequestContentLogMiddleware> { new LongJsonContentMiddleware(16) };
+            var jsonBuilder = new JsonContentBuilder();
+            var middlewares = new List<IRequestContentLogMiddleware> { new LongJsonContentMiddleware(jsonBuilder, 16) };
             var sut = new LogContentFactory(middlewares);
             string content = "{\"trimOn14\":\"123456789012345\",\"trimOn16\":\"12345678901234567\"}";
             byte[] contentBytes = Encoding.UTF8.GetBytes(content);
