@@ -18,7 +18,7 @@ namespace Onion.Logging.Tests
         public async Task LogContentFactory_PrepareBody_ProperlyHandlesMiddleware()
         {
             // Arrange
-            var jsonBuilder = new JsonContentBuilder();
+            var jsonBuilder = new JsonStreamModifier();
             var middlewares = new List<IRequestContentLogMiddleware> { new LongJsonContentMiddleware(jsonBuilder, 16) };
             var sut = new LogContentFactory(middlewares);
             string content = "{\"trimOn14\":\"123456789012345\",\"trimOn16\":\"12345678901234567\"}";

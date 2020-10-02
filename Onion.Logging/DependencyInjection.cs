@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,7 @@ namespace Onion.Logging
 
             // TODO: add LongJsonContentSettings and initialize max length from this config.
             services.AddTransient<IRequestContentLogMiddleware, LongJsonContentMiddleware>();
-            services.AddTransient<IJsonContentBuilder, JsonContentBuilder>();
+            services.AddTransient<IJsonStreamModifier, JsonStreamModifier>();
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Onion.Logging
         /// <code>
         ///    services.AddLogEndpointIgnorePredicate(new [] { "/api/swagger*", "/api/healthchecks*" })
         /// </code>
-        /// Will exclude all request logs to /api/swagger* and /api/healthchecks*
+        /// Will exclude all request logs to /api/swagger* and /api/healthchecks*.
         /// </example>
         public static void AddLogEndpointIgnorePredicate(
             this IServiceCollection services,

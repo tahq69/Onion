@@ -38,20 +38,25 @@ namespace Onion.Logging.Factories
             if (content is null)
                 throw new ArgumentNullException(nameof(content));
 
-            using var ms = new MemoryStream();
+            var ms = new MemoryStream();
             await content.CopyToAsync(ms);
             ms.Seek(0, SeekOrigin.Begin);
 
             StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
-            IRequestContentLogMiddleware? middleware = _middlewares
-                .FirstOrDefault(x => contentType?.Contains(x.ContentType, comparison) ?? false);
+            var middlewares = _middlewares
+                .Where(x => contentType?.Contains(x.ContentType, comparison) ?? false)
+                .ToList();
+
+            foreach (var middleware in middlewares)
+            {
+                var outputStream = new MemoryStream();
+                middleware.Modify(ms, outputStream);
+                ms = outputStream;
+                ms.Seek(0, SeekOrigin.Begin);
+            }
 
             string text = string.Empty;
-            if (middleware != null && ms.CanRead)
-            {
-                text = middleware.Modify(ms);
-            }
-            else if (ms.CanRead)
+            if (ms.CanRead)
             {
                 using var sr = new StreamReader(ms);
                 text = await sr.ReadToEndAsync();

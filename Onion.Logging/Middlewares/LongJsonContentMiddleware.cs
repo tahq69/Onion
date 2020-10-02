@@ -11,27 +11,27 @@ namespace Onion.Logging.Middlewares
     /// </summary>
     public class LongJsonContentMiddleware : IRequestContentLogMiddleware
     {
-        private readonly IJsonContentBuilder _jsonBuilder;
+        private readonly IJsonStreamModifier _jsonModifier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LongJsonContentMiddleware"/> class.
         /// </summary>
-        /// <param name="jsonBuilder">JSON content builder.</param>
-        public LongJsonContentMiddleware(IJsonContentBuilder jsonBuilder)
+        /// <param name="jsonModifier">JSON content modifier.</param>
+        public LongJsonContentMiddleware(IJsonStreamModifier jsonModifier)
         {
-            _jsonBuilder = jsonBuilder;
+            _jsonModifier = jsonModifier;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LongJsonContentMiddleware"/> class.
         /// </summary>
-        /// <param name="jsonBuilder">JSON content builder.</param>
+        /// <param name="jsonModifier">JSON content modifier.</param>
         /// <param name="maxCharCountInField">The maximum character count in field.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// If <paramref name="maxCharCountInField"/> is less than 1.
         /// </exception>
-        public LongJsonContentMiddleware(IJsonContentBuilder jsonBuilder, int maxCharCountInField)
-            : this(jsonBuilder)
+        public LongJsonContentMiddleware(IJsonStreamModifier jsonModifier, int maxCharCountInField)
+            : this(jsonModifier)
         {
             if (maxCharCountInField < 1)
                 throw new ArgumentOutOfRangeException(nameof(maxCharCountInField));
@@ -53,24 +53,28 @@ namespace Onion.Logging.Middlewares
         public string ContentType => "application/json";
 
         /// <inheritdoc/>
-        public string Modify(Stream content)
+        public void Modify(Stream input, Stream output)
         {
-            if (content is null)
-                throw new ArgumentNullException(nameof(content));
+            if (input is null)
+                throw new ArgumentNullException(nameof(input));
 
-            content.Seek(0, SeekOrigin.Begin);
+            input.Seek(0, SeekOrigin.Begin);
+            var clone = new MemoryStream();
+            input.CopyTo(clone);
 
-            using var streamReader = new StreamReader(content);
-            using var reader = new JsonTextReader(streamReader);
             try
             {
-                return _jsonBuilder.Build(reader, GetKey, GetValue);
+                input.Seek(0, SeekOrigin.Begin);
+                _jsonModifier.Modify(input, output, GetKey, GetValue);
             }
             catch (Exception)
             {
-                // Ignore content if we could not read it.
-                content.Seek(0, SeekOrigin.Begin);
-                return streamReader.ReadToEnd();
+                // Ignore modifications if we could not read it.
+                clone.Seek(0, SeekOrigin.Begin);
+                output.Seek(0, SeekOrigin.Begin);
+
+                clone.CopyTo(output);
+                output.Seek(0, SeekOrigin.Begin);
             }
         }
 

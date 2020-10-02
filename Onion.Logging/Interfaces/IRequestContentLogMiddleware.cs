@@ -15,10 +15,8 @@ namespace Onion.Logging.Interfaces
         /// <summary>
         /// Parses the specified request content to prepare it for logging.
         /// </summary>
-        /// <param name="content">The source stream to read from.</param>
-        /// <returns>
-        /// <paramref name="content"/> converted to string and prepared for logging without large data.
-        /// </returns>
-        string Modify(Stream content);
+        /// <param name="input">The source stream to read from.</param>
+        /// <param name="output">The target stream to write.</param>
+        void Modify(Stream input, Stream output);
     }
 }
