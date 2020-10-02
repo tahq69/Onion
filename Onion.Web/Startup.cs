@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Onion.Application;
@@ -26,12 +29,16 @@ namespace Onion.Web
     /// </summary>
     public partial class Startup
     {
+        private readonly IWebHostEnvironment _env;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
         /// <param name="configuration">The application configuration.</param>
-        public Startup(IConfiguration configuration)
+        /// <param name="env">The web host environment.</param>
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -66,23 +73,42 @@ namespace Onion.Web
 
             ConfigureSwagger(services);
             ConfigureApiVersioning(services);
+
+            if (_env.IsDevelopment())
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy(
+                        "AllowOrigin",
+                        builder => builder
+                            .WithOrigins("http://localhost:3000")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());
+                });
+            }
         }
 
         /// <summary>
         /// Configures the application.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        /// <param name="env">The web host environment.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<CorrelationIdMiddleware>();
             app.UseMiddleware<CorrelationIdLoggingMiddleware>();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("AllowOrigin");
             }
 
+            var assetPath = Path.Combine(_env.ContentRootPath, "Assets", "build");
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(assetPath),
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -90,7 +116,11 @@ namespace Onion.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
+                endpoints.MapGet("/", context =>
+                {
+                    context.Response.Redirect("index.html");
+                    return Task.CompletedTask;
+                });
             });
 
             app.UseSwagger();
