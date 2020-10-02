@@ -1,9 +1,9 @@
 $settings = @{
 	UpdateFiles = @('*.cs', '*.csproj', '*.config', '*.sln', '*.json', '*.git*')
 
-	GitUpdateMessage = "File content updated."
+	GitUpdateMessage = "File content updated"
 
-	GitMoveMessage = "Files and folders renamed."
+	GitMoveMessage = "Files and folders renamed"
 
 	Target = @{
 		Namespace = 'Namespace.Default'
@@ -73,7 +73,9 @@ function Update-Names () {
 }
 
 Write-Log "Starting to rename project."
-$isNamespaceDefault = 
+
+# Remove all untracked files to avoid documentation file appear in commits.
+git clean -fdX
 
 # Check that user has configured settings
 if ($settings.Target.Namespace -eq 'Namespace.Default') {
