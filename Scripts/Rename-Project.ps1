@@ -1,5 +1,5 @@
 $settings = @{
-	UpdateFiles = @('*.cs', '*.csproj', '*.config', '*.sln')
+	UpdateFiles = @('*.cs', '*.csproj', '*.config', '*.sln', '*.json', '*.git*')
 
 	GitUpdateMessage = "File content updated."
 
