@@ -1,25 +1,26 @@
 import React, {FC} from 'react';
-import {Button} from 'antd';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
 import logo from './../../images/logo.svg';
 import rest from './../../utils/rest';
+
+import About from './../About/About';
+import Login from './../Login/Login';
+
 import './App.less';
 
 const App: FC = () => (
     <div className="App">
-        <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo"/>
-            <p>
-                Edit <code>src/App.tsx</code> and save to reload.
-            </p>
-            <Button
-                className="App-link"
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Learn React
-            </Button>
-        </header>
+        <Router>
+            <Switch>
+                <Route path="/about"><About/></Route>
+                <Route path="/"><Login/></Route>
+            </Switch>
+        </Router>
     </div>
 );
 
