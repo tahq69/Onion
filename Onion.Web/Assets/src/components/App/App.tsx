@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import {Button} from 'antd';
-import logo from './logo.svg';
-import rest from './shared/rest';
+import logo from './../../images/logo.svg';
+import rest from './../../utils/rest';
 import './App.less';
 
 const App: FC = () => (
