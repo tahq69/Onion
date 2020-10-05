@@ -1,13 +1,33 @@
-﻿import React, {FC} from 'react';
+﻿import React, {FC, useState, useEffect} from 'react';
 import {Form, Input, Button, Checkbox, Space} from 'antd';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 
+import {rest, validateMessage, validateStatus} from './../../../../utils';
+
+import {LoginRequest, LoginResponse, Errors, Response} from "./types";
+
 const LoginForm: FC = () => {
-    const onFinish = (values: any) => {
+    const [errors, setErrors] = useState<Errors | undefined | null>(null);
+    const status = validateStatus(errors);
+    const message = validateMessage(errors);
+
+    const onFinish = (values: LoginRequest) => {
         console.log('Received values of form: ', values);
+
+        rest.post<LoginResponse>('/account/authenticate', values)
+            .then(r => r.data)
+            .then(data => {
+                console.log('request response:', data);
+            })
+            .catch(error => {
+                const body: Response<undefined> = error.response.data;
+                setErrors(body.errors);
+
+                console.log('request error:', error, body);
+            });
     };
 
-    const usernameRules = [{required: true, message: 'Please input your Username!'}];
+    const emailRules = [{required: true, message: 'Please input your Email!'}];
     const passwordRules = [{required: true, message: 'Please input your Password!'}];
 
     return (
@@ -18,10 +38,16 @@ const LoginForm: FC = () => {
             initialValues={{remember: true}}
             onFinish={onFinish}
         >
-            <Form.Item name="username" rules={usernameRules}>
+            <Form.Item
+                name="email"
+                rules={emailRules}
+                validateStatus={status("Email")}
+                help={message("Email")}
+            >
                 <Input
+                    type="email"
                     prefix={<UserOutlined className="site-form-item-icon"/>}
-                    placeholder="Username"/>
+                    placeholder="Email"/>
             </Form.Item>
             <Form.Item name="password" rules={passwordRules}>
                 <Input
