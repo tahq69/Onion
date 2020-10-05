@@ -1,20 +1,25 @@
-﻿import React, {FC, useState} from 'react';
+﻿import React, {FC} from 'react';
+import {useRecoilState} from 'recoil';
 import {Button, Checkbox, Form, Input, Space, Typography} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 
-import {rest, useErrors, useResponseMessage} from './../../../../utils';
+import {rest, useErrors, useResponseMessage} from '../../../../utils';
+import {authenticatedUserState} from '../../../../state/userState';
 
-import {LoginData, LoginRequest, LoginResponse, Response} from "./types";
+import {LoginData, LoginRequest, LoginResponse} from "./types";
 
 const LoginForm: FC = () => {
     const [status, error, errorHandler, clear] = useErrors();
     const [message, checkSucceeded] = useResponseMessage<LoginResponse, LoginData>();
+    const [, setAuthenticatedUser] = useRecoilState(authenticatedUserState);
 
     const onFinish = (values: LoginRequest) => {
         rest.post<LoginResponse>('/account/authenticate', values)
             .then(checkSucceeded)
             .then(data => {
-                console.log('request response:', data);
+                if (!data) throw new Error('User data is not received!');
+
+                setAuthenticatedUser(curr => ({...curr, ...data, ...{authenticated: true}}));
             })
             .catch(errorHandler);
     };
