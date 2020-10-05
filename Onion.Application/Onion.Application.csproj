@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Onion.Domain\Onion.Domain.csproj" />
+    <ProjectReference Include="..\Onion.Shared\Onion.Shared.csproj" />
   </ItemGroup>
 
 </Project>

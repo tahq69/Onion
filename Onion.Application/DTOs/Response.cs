@@ -1,5 +1,8 @@
 ﻿#nullable disable
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Onion.Shared.Extensions;
 
 namespace Onion.Application.DTOs
 {
@@ -9,6 +12,8 @@ namespace Onion.Application.DTOs
     /// <typeparam name="T">Type of the response data.</typeparam>
     public class Response<T>
     {
+        private IDictionary<string, ICollection<string>> _errors;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Response{T}"/> class.
         /// </summary>
@@ -55,7 +60,16 @@ namespace Onion.Application.DTOs
         /// <summary>
         /// Gets or sets response errors dictionary.
         /// </summary>
-        public IDictionary<string, ICollection<string>> Errors { get; set; }
+        public IDictionary<string, ICollection<string>> Errors
+        {
+            get => _errors;
+            set
+            {
+                _errors = value.ToDictionary(
+                    e => e.Key.ToLowerFirstChar(),
+                    e => e.Value);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the response data.

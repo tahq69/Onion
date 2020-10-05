@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Onion.Shared.Extensions;
 
 namespace Onion.Application.Exceptions
 {
@@ -14,6 +15,9 @@ namespace Onion.Application.Exceptions
     [Serializable]
     public class ValidationException : BaseException
     {
+        private IDictionary<string, ICollection<string>> _errors =
+            new Dictionary<string, ICollection<string>>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ValidationException"/> class.
         /// </summary>
@@ -31,10 +35,11 @@ namespace Onion.Application.Exceptions
         {
             foreach (ValidationFailure failure in failures)
             {
-                if (Errors.ContainsKey(failure.PropertyName))
-                    Errors[failure.PropertyName].Add(failure.ErrorMessage);
+                var key = failure.PropertyName.ToLowerFirstChar();
+                if (Errors.ContainsKey(key))
+                    Errors[key].Add(failure.ErrorMessage);
                 else
-                    Errors.Add(failure.PropertyName, new List<string> { failure.ErrorMessage });
+                    Errors.Add(key, new List<string> { failure.ErrorMessage });
             }
         }
 
@@ -60,7 +65,16 @@ namespace Onion.Application.Exceptions
         /// <summary>
         /// Gets the validation errors.
         /// </summary>
-        public IDictionary<string, ICollection<string>> Errors { get; } = new Dictionary<string, ICollection<string>>();
+        public IDictionary<string, ICollection<string>> Errors
+        {
+            get => _errors;
+            private set
+            {
+                _errors = value.ToDictionary(
+                    e => e.Key.ToLowerFirstChar(),
+                    e => e.Value);
+            }
+        }
 
         /// <summary>
         /// Creates validation error exception with single property and messages in it.

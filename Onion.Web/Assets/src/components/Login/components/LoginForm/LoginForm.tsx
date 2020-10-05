@@ -1,30 +1,22 @@
-﻿import React, {FC, useState, useEffect} from 'react';
-import {Form, Input, Button, Checkbox, Space} from 'antd';
-import {UserOutlined, LockOutlined} from '@ant-design/icons';
+﻿import React, {FC, useState} from 'react';
+import {Button, Checkbox, Form, Input, Space, Typography} from 'antd';
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
 
-import {rest, validateMessage, validateStatus} from './../../../../utils';
+import {rest, useErrors, useResponseMessage} from './../../../../utils';
 
-import {LoginRequest, LoginResponse, Errors, Response} from "./types";
+import {LoginData, LoginRequest, LoginResponse, Response} from "./types";
 
 const LoginForm: FC = () => {
-    const [errors, setErrors] = useState<Errors | undefined | null>(null);
-    const status = validateStatus(errors);
-    const message = validateMessage(errors);
+    const [status, error, errorHandler, clear] = useErrors();
+    const [message, checkSucceeded] = useResponseMessage<LoginResponse, LoginData>();
 
     const onFinish = (values: LoginRequest) => {
-        console.log('Received values of form: ', values);
-
         rest.post<LoginResponse>('/account/authenticate', values)
-            .then(r => r.data)
+            .then(checkSucceeded)
             .then(data => {
                 console.log('request response:', data);
             })
-            .catch(error => {
-                const body: Response<undefined> = error.response.data;
-                setErrors(body.errors);
-
-                console.log('request error:', error, body);
-            });
+            .catch(errorHandler);
     };
 
     const emailRules = [{required: true, message: 'Please input your Email!'}];
@@ -38,19 +30,23 @@ const LoginForm: FC = () => {
             initialValues={{remember: true}}
             onFinish={onFinish}
         >
+            {message ? <Typography.Text type="danger">{message}</Typography.Text> : undefined}
+
             <Form.Item
                 name="email"
                 rules={emailRules}
-                validateStatus={status("Email")}
-                help={message("Email")}
+                validateStatus={status("email")}
+                help={error("email")}
             >
                 <Input
                     type="email"
+                    onChange={() => clear("email")}
                     prefix={<UserOutlined className="site-form-item-icon"/>}
                     placeholder="Email"/>
             </Form.Item>
             <Form.Item name="password" rules={passwordRules}>
                 <Input
+                    onChange={() => clear("email")}
                     prefix={<LockOutlined className="site-form-item-icon"/>}
                     type="password"
                     placeholder="Password"
