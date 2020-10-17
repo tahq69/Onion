@@ -29,8 +29,8 @@ namespace Onion.Web.IntegrationTests.Controllers
             content.Succeeded.Should().BeFalse();
             content.Errors.Should().BeEquivalentTo(new Dictionary<string, ICollection<string>>
             {
-                { "Email", new[] { "The Email field is not a valid e-mail address." } },
-                { "Password", new[] { "The Password field is required." } },
+                { "email", new[] { "The Email field is not a valid e-mail address." } },
+                { "password", new[] { "The Password field is required." } },
             });
         }
 
@@ -48,11 +48,11 @@ namespace Onion.Web.IntegrationTests.Controllers
             var content = await ReadResponseContent<Response<string>>(response);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             content.Succeeded.Should().BeFalse();
             content.Errors.Should().BeEquivalentTo(new Dictionary<string, ICollection<string>>
             {
-                { "Email", new[] { "Invalid credentials provided." } },
+                { "email", new[] { "Invalid credentials provided." } },
             });
         }
 
@@ -70,11 +70,11 @@ namespace Onion.Web.IntegrationTests.Controllers
             var content = await ReadResponseContent<Response<string>>(response);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
             content.Succeeded.Should().BeFalse();
             content.Errors.Should().BeEquivalentTo(new Dictionary<string, ICollection<string>>
             {
-                { "Email", new[] { "Invalid credentials provided." } },
+                { "email", new[] { "Invalid credentials provided." } },
             });
         }
 

@@ -44,6 +44,9 @@ namespace Onion.Identity.Services
         }
 
         /// <inheritdoc />
+        public TimeSpan TokenDuration => _jwtSettings.Duration;
+
+        /// <inheritdoc />
         public async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
         {
             var claims = await GetClaims(user);

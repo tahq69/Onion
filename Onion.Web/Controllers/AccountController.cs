@@ -33,7 +33,9 @@ namespace Onion.Web.Controllers
             get
             {
                 if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                {
                     return Request.Headers["X-Forwarded-For"];
+                }
 
                 return HttpContext.Connection.RemoteIpAddress?.ToString();
             }
@@ -60,9 +62,14 @@ namespace Onion.Web.Controllers
             });
 
             if (!result.Succeeded)
-                return Unauthorized(result);
+            {
+                return BadRequest(result);
+            }
 
-            SetTokenCookie(result.Data.RefreshToken);
+            if (request.Remember ?? true)
+            {
+                SetTokenCookie(result.Data.RefreshToken);
+            }
 
             return Ok(result);
         }
@@ -90,7 +97,9 @@ namespace Onion.Web.Controllers
             var result = await Mediator.Send(cmd);
 
             if (!result.Succeeded)
+            {
                 return Unauthorized(result);
+            }
 
             return Ok(result);
         }
@@ -109,7 +118,9 @@ namespace Onion.Web.Controllers
         {
             var token = request?.Token;
             if (string.IsNullOrWhiteSpace(token) && HasTokenCookie)
+            {
                 token = TokenCookie;
+            }
 
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -122,7 +133,9 @@ namespace Onion.Web.Controllers
             Response<bool> result = await Mediator.Send(new RevokeTokenCommand(token, IpAddress));
 
             if (!result.Succeeded)
+            {
                 return NotFound(result);
+            }
 
             return Ok(result);
         }
@@ -149,7 +162,9 @@ namespace Onion.Web.Controllers
             });
 
             if (!result.Succeeded)
+            {
                 return BadRequest(result);
+            }
 
             return Ok(result);
         }
@@ -192,7 +207,9 @@ namespace Onion.Web.Controllers
             });
 
             if (!result.Succeeded)
+            {
                 return BadRequest(result);
+            }
 
             return Ok(result);
         }
@@ -217,7 +234,9 @@ namespace Onion.Web.Controllers
             });
 
             if (result.Succeeded)
+            {
                 return Ok(result);
+            }
 
             return BadRequest(result);
         }
@@ -227,7 +246,9 @@ namespace Onion.Web.Controllers
         private string? GenerateIpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
+            {
                 return Request.Headers["X-Forwarded-For"];
+            }
 
             return HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         }

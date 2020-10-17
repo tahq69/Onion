@@ -39,6 +39,11 @@ namespace Onion.Application.DTOs.Account
         public string Token { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets time left while token is valid.
+        /// </summary>
+        public double ExpiresIn { get; set; }
+
+        /// <summary>
         /// Gets or sets authentication refresh tokens.
         /// </summary>
         [JsonIgnore]

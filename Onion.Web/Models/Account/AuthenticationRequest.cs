@@ -19,5 +19,10 @@ namespace Onion.Web.Models.Account
         /// </summary>
         [Required]
         public string? Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets user indicator to be remembered on this PC.
+        /// </summary>
+        public bool? Remember { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Onion.Domain.Entities;
 using Onion.Identity.Models;
@@ -10,6 +11,11 @@ namespace Onion.Identity.Interfaces
     /// </summary>
     public interface IJwtService
     {
+        /// <summary>
+        /// Gets jWT token duration.
+        /// </summary>
+        TimeSpan TokenDuration { get; }
+
         /// <summary>
         /// Generate JWT Token for provided <paramref name="user" />.
         /// </summary>

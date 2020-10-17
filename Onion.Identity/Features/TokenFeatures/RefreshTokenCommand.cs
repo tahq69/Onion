@@ -73,11 +73,15 @@ namespace Onion.Identity.Features.TokenFeatures
             {
                 var user = await _users.SingleByRefreshToken(request.RefreshToken, ct);
                 if (user == null)
+                {
                     return CreateFailureResponse("Invalid refresh token value.");
+                }
 
                 var refreshToken = user.RefreshTokens.Single(x => x.Token == request.RefreshToken);
                 if (!refreshToken.IsActive)
+                {
                     return CreateFailureResponse("Refresh token is already expired.");
+                }
 
                 RefreshToken newRefreshToken = await UpdateRefreshToken(refreshToken, user, request.IpAddress, ct);
 
@@ -93,6 +97,7 @@ namespace Onion.Identity.Features.TokenFeatures
                     Roles = roles,
                     IsVerified = user.EmailConfirmed,
                     RefreshToken = newRefreshToken.Token,
+                    ExpiresIn = _jwt.TokenDuration.TotalSeconds,
                 };
 
                 return new Response<AuthenticationResult>(response, "User token updated.");

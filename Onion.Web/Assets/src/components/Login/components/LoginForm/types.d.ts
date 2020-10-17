@@ -7,15 +7,3 @@ export interface LoginRequest {
     password: string
     remember: boolean
 }
-
-export interface LoginData {
-    id: string
-    userName: string
-    email: string
-    roles: Array<string>,
-    isVerified: boolean,
-    token: string
-}
-
-export interface LoginResponse extends Response<LoginData> {
-}

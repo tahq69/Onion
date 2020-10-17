@@ -65,9 +65,12 @@ namespace Onion.Application.DTOs
             get => _errors;
             set
             {
-                _errors = value.ToDictionary(
-                    e => e.Key.ToLowerFirstChar(),
-                    e => e.Value);
+                if (value != null)
+                {
+                    _errors = value.ToDictionary(
+                        e => e.Key.ToLowerFirstChar(),
+                        e => e.Value);
+                }
             }
         }
 

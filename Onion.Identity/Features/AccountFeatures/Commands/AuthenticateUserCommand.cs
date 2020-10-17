@@ -116,6 +116,7 @@ namespace Onion.Identity.Features.AccountFeatures.Commands
                     Roles = roles,
                     IsVerified = user.EmailConfirmed,
                     RefreshToken = refreshToken.Token,
+                    ExpiresIn = _jwt.TokenDuration.TotalSeconds,
                 };
 
                 return new Response<AuthenticationResult>(response, $"Authenticated {user.UserName}");

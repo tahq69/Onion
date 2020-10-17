@@ -1,25 +1,21 @@
 ﻿import React, {FC} from 'react';
 import {useRecoilState} from 'recoil';
-import {Button, Checkbox, Form, Input, Space, Typography} from 'antd';
+import {Button, Checkbox, Form, Input, Space} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 
-import {rest, useErrors, useResponseMessage} from '../../../../utils';
+import {login, useErrors} from '../../../../utils';
 import {authenticatedUserState} from '../../../../state/userState';
 
-import {LoginData, LoginRequest, LoginResponse} from "./types";
+import {LoginRequest} from './types';
 
 const LoginForm: FC = () => {
     const [status, error, errorHandler, clear] = useErrors();
-    const [message, checkSucceeded] = useResponseMessage<LoginResponse, LoginData>();
     const [, setAuthenticatedUser] = useRecoilState(authenticatedUserState);
 
     const onFinish = (values: LoginRequest) => {
-        rest.post<LoginResponse>('/account/authenticate', values)
-            .then(checkSucceeded)
-            .then(data => {
-                if (!data) throw new Error('User data is not received!');
-
-                setAuthenticatedUser(curr => ({...curr, ...data, ...{authenticated: true}}));
+        login(values.email, values.password, values.remember)
+            .then(user => {
+                setAuthenticatedUser(curr => ({...curr, ...user, ...{authenticated: true}}));
             })
             .catch(errorHandler);
     };
@@ -35,8 +31,6 @@ const LoginForm: FC = () => {
             initialValues={{remember: true}}
             onFinish={onFinish}
         >
-            {message ? <Typography.Text type="danger">{message}</Typography.Text> : undefined}
-
             <Form.Item
                 name="email"
                 rules={emailRules}
