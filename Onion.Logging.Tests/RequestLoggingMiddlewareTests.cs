@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
+using Onion.Logging.Loggers;
 using Onion.Logging.Middlewares;
 using Serilog;
 using Serilog.Events;
@@ -191,11 +192,13 @@ Host: localhost
 Authorization: Basic RE9NQUlOXHVzZXJuYW1lOnBhc3N3b3JkCg==
 Foo: bar, baz
 
-Request body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+Request body
+ { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
                 @"Verbose: HTTP/1.1 200 OK
 Foo: Bar
 
-Response body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+Response body
+ { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
                 "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
         }
@@ -223,11 +226,11 @@ Response body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddlew
             var handler = new RequestLoggingMiddlewareUnderTest(
                 ctx =>
                 {
-                    ctx.Response.StatusCode = 200;
+                    ctx.Response.StatusCode = 500;
                     throw new Exception("Exception message");
                 },
                 factory);
-            
+
             // Act
             using var _ = TestCorrelator.CreateContext();
             logger.LogInformation("Before");
@@ -236,7 +239,7 @@ Response body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddlew
                 await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
             });
             logger.LogInformation("After");
-            
+
             // Assert
             ex1.Message.Should().Be("Exception message");
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
@@ -246,6 +249,7 @@ Response body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddlew
                 "Information: GET http://localhost/master/slave at 00:00:00:100 with 500 InternalServerError { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
         }
+
         public string FormatLogEvent(LogEvent evt)
         {
             var culture = CultureInfo.InvariantCulture;
@@ -263,9 +267,15 @@ Response body { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddlew
             public RequestLoggingMiddlewareUnderTest(RequestDelegate next, ILoggerFactory factory)
                 : base(
                     next,
-                    new LogContentFactory(Enumerable.Empty<IRequestContentLogMiddleware>()),
-                    new LogHeaderFactory(Enumerable.Empty<IHeaderLogMiddleware>()),
-                    factory)
+                    new ContextLogger(
+                        factory,
+                        new RequestLogger(
+                            new LogContentFactory(Enumerable.Empty<IRequestContentLogMiddleware>()),
+                            new LogHeaderFactory(Enumerable.Empty<IHeaderLogMiddleware>())),
+                        new ResponseLogger(
+                            new LogContentFactory(Enumerable.Empty<IRequestContentLogMiddleware>()),
+                            new LogHeaderFactory(Enumerable.Empty<IHeaderLogMiddleware>()))
+                    ))
             {
             }
 
