@@ -74,9 +74,6 @@ namespace Onion.Logging.Middlewares
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Invoke(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
         {
-            if (context == null) throw new ArgumentNullException(nameof(context));
-            if (predicates == null) throw new ArgumentNullException(nameof(predicates));
-
             // Add controller name to logging hierarchy if available.
             ILogger logger = TryGetControllerLogger(context, _logger);
             string newLine = Environment.NewLine;
@@ -99,7 +96,10 @@ namespace Onion.Logging.Middlewares
             {
                 // Apply request predicates to skip request logging.
                 bool skip = predicates.Any(i => i.Filter(req));
-                if (skip) level = LogLevel.None;
+                if (skip)
+                {
+                    level = LogLevel.None;
+                }
 
                 // Log request details if we use Trace or Debug log level.
                 if (level <= LogLevel.Debug)
@@ -131,7 +131,10 @@ namespace Onion.Logging.Middlewares
                 using (var temp = new MemoryStream())
                 {
                     // We will read response if using Trace log level.
-                    if (level <= LogLevel.Trace) resp.Body = temp;
+                    if (level <= LogLevel.Trace)
+                    {
+                        resp.Body = temp;
+                    }
 
                     //// ---------------------------------------------------------------------------
                     await _next(context);
@@ -185,7 +188,9 @@ namespace Onion.Logging.Middlewares
             {
                 // If using Information, Debug or Trace level, write basic request info.
                 if (level <= LogLevel.Information)
+                {
                     logger.LogInformation(httpRequest);
+                }
 
                 responseScope?.Dispose();
             }

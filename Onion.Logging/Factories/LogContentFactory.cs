@@ -19,7 +19,7 @@ namespace Onion.Logging.Factories
         /// Initializes a new instance of the <see cref="LogContentFactory"/> class.
         /// </summary>
         /// <param name="middlewares">The middlewares.</param>
-        public LogContentFactory(IEnumerable<IRequestContentLogMiddleware> middlewares)
+        public LogContentFactory(IEnumerable<IRequestContentLogMiddleware>? middlewares)
         {
             _middlewares = middlewares ?? Enumerable.Empty<IRequestContentLogMiddleware>();
         }
@@ -35,9 +35,6 @@ namespace Onion.Logging.Factories
         /// </exception>
         public async Task<string> PrepareBody(string contentType, Stream content)
         {
-            if (content is null)
-                throw new ArgumentNullException(nameof(content));
-
             var ms = new MemoryStream();
             await content.CopyToAsync(ms);
             ms.Seek(0, SeekOrigin.Begin);

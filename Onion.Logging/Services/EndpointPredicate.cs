@@ -19,8 +19,8 @@ namespace Onion.Logging.Services
         /// Initializes a new instance of the <see cref="EndpointPredicate"/> class.
         /// Include or exclude requests from logging based on endpoint.
         /// </summary>
-        /// <param name="exclude">True to disable any request from logging excluding those of pattern set</param>
-        /// <param name="patterns">List of wildcard patterns to be logged if exclude set to true</param>
+        /// <param name="exclude">True to disable any request from logging excluding those of pattern set.</param>
+        /// <param name="patterns">List of wildcard patterns to be logged if exclude set to true.</param>
         public EndpointPredicate(bool exclude, IEnumerable<string> patterns)
         {
             _exclude = exclude;
@@ -36,7 +36,10 @@ namespace Onion.Logging.Services
         /// <inheritdoc/>
         public bool Filter(HttpRequest req)
         {
-            if (req == null) throw new ArgumentNullException(nameof(req));
+            if (req == null)
+            {
+                throw new ArgumentNullException(nameof(req));
+            }
 
             string url = req.Path;
             var matches = _expressions

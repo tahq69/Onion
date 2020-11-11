@@ -27,8 +27,8 @@ namespace Onion.Logging.Factories
         /// <returns>Logging ready value.</returns>
         public string PrepareHeader(KeyValuePair<string, StringValues> header)
         {
-            var key = header.Key;
-            var value = header.Value.ToString();
+            var (key, values) = header;
+            var value = values.ToString();
             foreach (IHeaderLogMiddleware middleware in _middlewares)
             {
                 value = middleware.Modify(key, value);

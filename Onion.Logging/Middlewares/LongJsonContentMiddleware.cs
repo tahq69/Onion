@@ -34,7 +34,9 @@ namespace Onion.Logging.Middlewares
             : this(jsonModifier)
         {
             if (maxCharCountInField < 1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(maxCharCountInField));
+            }
 
             MaxCharCountInField = maxCharCountInField;
         }
@@ -55,9 +57,6 @@ namespace Onion.Logging.Middlewares
         /// <inheritdoc/>
         public void Modify(Stream input, Stream output)
         {
-            if (input is null)
-                throw new ArgumentNullException(nameof(input));
-
             input.Seek(0, SeekOrigin.Begin);
             var clone = new MemoryStream();
             input.CopyTo(clone);
@@ -90,17 +89,16 @@ namespace Onion.Logging.Middlewares
         private object? GetValue(JsonToken tokenType, object? value)
         {
             if (value is null)
+            {
                 return null;
+            }
 
             switch (tokenType)
             {
                 case JsonToken.Bytes:
                 case JsonToken.String:
-                    string? val = value.ToString();
-                    if (val?.Length > MaxCharCountInField)
-                        val = $"{val.Substring(0, LeaveOnTrim)}...";
-
-                    return val;
+                    var val = value.ToString();
+                    return val?.Length <= MaxCharCountInField ? val : $"{val?.Substring(0, LeaveOnTrim)}...";
 
                 default:
                     return value;

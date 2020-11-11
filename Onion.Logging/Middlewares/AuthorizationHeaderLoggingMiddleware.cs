@@ -11,24 +11,15 @@ namespace Onion.Logging.Middlewares
     /// </remarks>
     public class AuthorizationHeaderLoggingMiddleware : IHeaderLogMiddleware
     {
+        private const StringComparison Comparison = StringComparison.Ordinal;
+
         /// <inheritdoc/>
-        public string Modify(string key, string value)
-        {
-            StringComparison comparison = StringComparison.Ordinal;
-
-            if (key == "Authorization" && value.StartsWith("Basic ", comparison))
+        public string Modify(string key, string value) =>
+            key switch
             {
-                // Do not log passwords
-                return "Basic *****";
-            }
-
-            if (key == "Authorization" && value.StartsWith("Bearer ", comparison))
-            {
-                // Do not log tokens
-                return "Bearer *****";
-            }
-
-            return value;
-        }
+                "Authorization" when value.StartsWith("Basic ", Comparison) => "Basic *****",
+                "Authorization" when value.StartsWith("Bearer ", Comparison) => "Bearer *****",
+                _ => value
+            };
     }
 }

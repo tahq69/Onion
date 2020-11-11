@@ -16,7 +16,9 @@ namespace Onion.Logging
         public static LogLevel GetLogLevel(this ILogger logger)
         {
             if (logger == null)
+            {
                 throw new ArgumentNullException(nameof(logger));
+            }
 
             var level =
                 logger.IsEnabled(LogLevel.Trace) ? LogLevel.Trace :

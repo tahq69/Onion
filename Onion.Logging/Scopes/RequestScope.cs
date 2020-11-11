@@ -11,13 +11,13 @@ namespace Onion.Logging.Scopes
         /// Initializes a new instance of the <see cref="RequestScope"/> class.
         /// </summary>
         /// <param name="endpoint">The request endpoint address.</param>
-        /// <param name="methhod">HTTP request method.</param>
-        public RequestScope(string endpoint, string methhod)
+        /// <param name="method">HTTP request method.</param>
+        public RequestScope(string endpoint, string method)
             : base(3)
         {
             Add("EventName", "HttpRequest");
             Add("Endpoint", endpoint);
-            Add("HttpMethod", methhod);
+            Add("HttpMethod", method);
         }
     }
 }
