@@ -16,19 +16,19 @@ namespace Onion.Logging.Middlewares
     public class RequestLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IContextLogger _contextLogger;
+        private readonly IContextLoggerFactory _contextLoggerFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestLoggingMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next request delegate.</param>
-        /// <param name="contextLogger">HTTP context logger.</param>
+        /// <param name="contextLoggerFactory">HTTP context logger factory service.</param>
         public RequestLoggingMiddleware(
             RequestDelegate next,
-            IContextLogger contextLogger)
+            IContextLoggerFactory contextLoggerFactory)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _contextLogger = contextLogger;
+            _contextLoggerFactory = contextLoggerFactory;
         }
 
         /// <summary>
@@ -52,40 +52,32 @@ namespace Onion.Logging.Middlewares
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Invoke(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
         {
-            var logger = _contextLogger.FromContext(context);
-            LogLevel level = logger.GetLogLevel();
-
-            // Measure request processing time.
-            IStopwatch stopwatch = CreateStopwatch();
+            var logger = _contextLoggerFactory.Create(context);
+            var level = Level(context, predicates, logger);
+            var stopwatch = CreateStopwatch();
             stopwatch.Start();
 
             try
             {
-                if (predicates.Any(predicate => predicate.Filter(context.Request)))
-                {
-                    level = LogLevel.None;
-                }
-
                 await logger.LogRequest(level);
 
                 Stream originalBodyStream = context.Response.Body;
-                await using var temp = new MemoryStream();
+                await using MemoryStream temp = new();
                 if (level <= LogLevel.Trace)
                 {
                     context.Response.Body = temp;
                 }
 
+                // -------------------------------------------------------------
                 await _next(context);
+                // -------------------------------------------------------------
 
                 stopwatch.Stop();
 
-                if (level <= LogLevel.Debug)
+                await logger.LogResponse(level, stopwatch);
+                if (level <= LogLevel.Trace)
                 {
-                    await logger.LogResponse(level, stopwatch);
-                    if (level <= LogLevel.Trace)
-                    {
-                        await temp.CopyToAsync(originalBodyStream);
-                    }
+                    await temp.CopyToAsync(originalBodyStream);
                 }
             }
             catch (Exception exception)
@@ -97,10 +89,7 @@ namespace Onion.Logging.Middlewares
             }
             finally
             {
-                if (level <= LogLevel.Information)
-                {
-                    logger.LogInfo(stopwatch);
-                }
+                logger.LogInfo(level, stopwatch);
             }
         }
 
@@ -111,6 +100,24 @@ namespace Onion.Logging.Middlewares
         protected virtual IStopwatch CreateStopwatch()
         {
             return new LoggingStopwatch();
+        }
+
+        private static LogLevel Level(
+            HttpContext context,
+            IEnumerable<IHttpRequestPredicate> predicates,
+            IContextLogger logger)
+        {
+            if (ShouldSkip(context, predicates))
+            {
+                return LogLevel.None;
+            }
+
+            return logger.GetLogLevel();
+        }
+
+        private static bool ShouldSkip(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
+        {
+            return predicates.Any(predicate => predicate.Filter(context.Request));
         }
     }
 }

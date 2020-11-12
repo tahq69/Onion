@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Loggers;
 using Onion.Logging.Middlewares;
@@ -26,6 +27,7 @@ namespace Onion.Logging
             // TODO: add LongJsonContentSettings and initialize max length from this config.
             services.AddTransient<IRequestContentLogMiddleware, LongJsonContentMiddleware>();
             services.AddTransient<IJsonStreamModifier, JsonStreamModifier>();
+            services.AddTransient<IContextLoggerFactory, ContextLoggerFactory>();
             services.AddTransient<IRequestLogger, RequestLogger>();
             services.AddTransient<IResponseLogger, ResponseLogger>();
         }

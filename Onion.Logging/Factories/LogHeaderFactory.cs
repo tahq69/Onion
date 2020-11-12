@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Primitives;
 using Onion.Logging.Interfaces;
 
@@ -28,13 +29,10 @@ namespace Onion.Logging.Factories
         public string PrepareHeader(KeyValuePair<string, StringValues> header)
         {
             var (key, values) = header;
-            var value = values.ToString();
-            foreach (IHeaderLogMiddleware middleware in _middlewares)
-            {
-                value = middleware.Modify(key, value);
-            }
 
-            return value;
+            return _middlewares.Aggregate(
+                values.ToString(),
+                (current, middleware) => middleware.Modify(key, current));
         }
     }
 }

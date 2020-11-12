@@ -7,13 +7,11 @@ namespace Onion.Logging.Interfaces
 {
     public interface IContextLogger
     {
-        IContextLogger FromContext(HttpContext context);
-
         Task LogRequest(LogLevel level);
 
         Task LogResponse(LogLevel level, IStopwatch stopwatch);
 
-        void LogInfo(IStopwatch stopwatch);
+        void LogInfo(LogLevel level, IStopwatch stopwatch);
 
         void LogError(Exception exception, IStopwatch stopwatch);
 

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -117,7 +115,7 @@ namespace Onion.Logging.Tests
             logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
             logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
 
-            var handler = new RequestLoggingMiddlewareUnderTest(
+            RequestLoggingMiddlewareUnderTest handler = new(
                 async ctx =>
                 {
                     ctx.Response.StatusCode = 200;
@@ -168,7 +166,7 @@ Foo: Bar
             logger.IsEnabled(LogLevel.Debug).Should().BeTrue();
             logger.IsEnabled(LogLevel.Trace).Should().BeTrue();
 
-            var handler = new RequestLoggingMiddlewareUnderTest(
+            RequestLoggingMiddlewareUnderTest handler = new(
                 async ctx =>
                 {
                     ctx.Response.StatusCode = 200;
@@ -223,7 +221,7 @@ Response body
             logger.IsEnabled(LogLevel.Debug).Should().BeFalse();
             logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
 
-            var handler = new RequestLoggingMiddlewareUnderTest(
+            RequestLoggingMiddlewareUnderTest handler = new(
                 ctx =>
                 {
                     ctx.Response.StatusCode = 500;
@@ -250,12 +248,13 @@ Response body
                 "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
         }
 
-        public string FormatLogEvent(LogEvent evt)
+        private string FormatLogEvent(LogEvent evt)
         {
+            const string template = "{Level}: {Message:lj} {Properties}";
+
             var culture = CultureInfo.InvariantCulture;
-            var template = "{Level}: {Message:lj} {Properties}";
-            var formatter = new MessageTemplateTextFormatter(template, culture);
-            var sw = new StringWriter();
+            MessageTemplateTextFormatter formatter = new(template, culture);
+            StringWriter sw = new();
             formatter.Format(evt, sw);
 
             return sw.ToString();
@@ -267,15 +266,17 @@ Response body
             public RequestLoggingMiddlewareUnderTest(RequestDelegate next, ILoggerFactory factory)
                 : base(
                     next,
-                    new ContextLogger(
+                    new ContextLoggerFactory(
                         factory,
                         new RequestLogger(
-                            new LogContentFactory(Enumerable.Empty<IRequestContentLogMiddleware>()),
-                            new LogHeaderFactory(Enumerable.Empty<IHeaderLogMiddleware>())),
+                            new(Enumerable.Empty<IRequestContentLogMiddleware>()),
+                            new(Enumerable.Empty<IHeaderLogMiddleware>())),
                         new ResponseLogger(
-                            new LogContentFactory(Enumerable.Empty<IRequestContentLogMiddleware>()),
-                            new LogHeaderFactory(Enumerable.Empty<IHeaderLogMiddleware>()))
-                    ))
+                            new(Enumerable.Empty<IRequestContentLogMiddleware>()),
+                            new(Enumerable.Empty<IHeaderLogMiddleware>())),
+                        new BasicInfoLogger()
+                    )
+                )
             {
             }
 

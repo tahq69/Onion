@@ -13,6 +13,7 @@ namespace Onion.Logging.Factories
     /// </summary>
     public class LogContentFactory
     {
+        private const StringComparison Comparison = StringComparison.InvariantCultureIgnoreCase;
         private readonly IEnumerable<IRequestContentLogMiddleware> _middlewares;
 
         /// <summary>
@@ -39,9 +40,8 @@ namespace Onion.Logging.Factories
             await content.CopyToAsync(ms);
             ms.Seek(0, SeekOrigin.Begin);
 
-            StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
             var middlewares = _middlewares
-                .Where(x => contentType?.Contains(x.ContentType, comparison) ?? false)
+                .Where(x => contentType?.Contains(x.ContentType, Comparison) ?? false)
                 .ToList();
 
             foreach (var middleware in middlewares)

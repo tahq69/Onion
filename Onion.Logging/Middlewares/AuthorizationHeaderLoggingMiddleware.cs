@@ -19,7 +19,7 @@ namespace Onion.Logging.Middlewares
             {
                 "Authorization" when value.StartsWith("Basic ", Comparison) => "Basic *****",
                 "Authorization" when value.StartsWith("Bearer ", Comparison) => "Bearer *****",
-                _ => value
+                _ => value,
             };
     }
 }
