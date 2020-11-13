@@ -6,8 +6,12 @@ using Onion.Logging.Interfaces;
 
 namespace Onion.Logging.Loggers
 {
+    /// <summary>
+    /// HTTP request basic information logger implementation.
+    /// </summary>
     public class BasicInfoLogger : IBasicInfoLogger
     {
+        /// <inheritdoc cref="IBasicInfoLogger"/>
         public void LogBasicInfo(ILogger logger, LogLevel level, IStopwatch stopwatch, HttpContext context)
         {
             if (level > LogLevel.Information)
