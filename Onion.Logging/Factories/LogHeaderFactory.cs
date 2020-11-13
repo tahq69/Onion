@@ -16,9 +16,9 @@ namespace Onion.Logging.Factories
         /// Initializes a new instance of the <see cref="LogHeaderFactory"/> class.
         /// </summary>
         /// <param name="middlewares">Header logging middlewares.</param>
-        public LogHeaderFactory(IEnumerable<IHeaderLogMiddleware> middlewares)
+        public LogHeaderFactory(IEnumerable<IHeaderLogMiddleware>? middlewares)
         {
-            _middlewares = middlewares;
+            _middlewares = middlewares ?? Enumerable.Empty<IHeaderLogMiddleware>();
         }
 
         /// <summary>

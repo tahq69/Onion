@@ -18,12 +18,12 @@ namespace Onion.Logging.Tests
         [InlineData(LogLevel.Critical)]
         [InlineData(LogLevel.Error)]
         [InlineData(LogLevel.Warning)]
-        public void BasicInfoLogger_LogBasicInfo_DoesNotWritesLogIfLevelIsToHigh(LogLevel level)
+        public void BasicInfoLogger_LogBasicInfo_DoesNotWritesLogIfLevelIsNotSufficient(LogLevel level)
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = CreateContext();
+            HttpContext context = HttpContextExtensions.CreateContext();
             BasicInfoLogger sut = new();
 
             // Act
@@ -72,7 +72,7 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = CreateContext(
+            HttpContext context = HttpContextExtensions.CreateContext(
                 method: "POST",
                 scheme: HttpScheme.Https,
                 queryParams: new() { { "cat", "221" } });
@@ -97,7 +97,7 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = CreateContext(
+            HttpContext context = HttpContextExtensions.CreateContext(
                 method: "POST",
                 scheme: HttpScheme.Http,
                 responseStatus: HttpStatusCode.InternalServerError,
@@ -115,30 +115,6 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 "POST http://localhost/master/slave?cats=1 at 00:00:03:000 with 500 InternalServerError",
                 LogLevel.Information);
-        }
-
-        private HttpContext CreateContext(
-            string method = "GET",
-            HttpScheme scheme = HttpScheme.Http,
-            HostString? host = null,
-            PathString? pathBase = null,
-            PathString? path = null,
-            string protocol = "HTTP/1.1",
-            Dictionary<string, string>? queryParams = null,
-            HttpStatusCode responseStatus = HttpStatusCode.OK)
-        {
-            HttpContext context = new DefaultHttpContext();
-
-            context.Request.Method = method;
-            context.Request.Scheme = scheme.ToString().ToLower();
-            context.Request.Host = host ?? new("localhost");
-            context.Request.PathBase = pathBase ?? "/master";
-            context.Request.Path = path ?? "/slave";
-            context.Request.QueryString = QueryString.Create(queryParams ?? new Dictionary<string, string>());
-            context.Request.Protocol = protocol;
-            context.Response.StatusCode = (int)responseStatus;
-
-            return context;
         }
     }
 }

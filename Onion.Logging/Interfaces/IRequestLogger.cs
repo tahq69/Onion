@@ -12,6 +12,7 @@ namespace Onion.Logging.Interfaces
         /// <summary>
         /// Writes request log if provided <paramref name="level"/> is sufficient.
         /// </summary>
+        /// <param name="logger">The actual logger instance.</param>
         /// <param name="level">Current logging level.</param>
         /// <param name="context">The HTTP request context.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

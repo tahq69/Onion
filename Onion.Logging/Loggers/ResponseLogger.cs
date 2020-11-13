@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,16 +8,18 @@ using Onion.Logging.Interfaces;
 
 namespace Onion.Logging.Loggers
 {
-    public class ResponseLogger : RequestLogger, IResponseLogger
+    public class ResponseLogger : BaseLogger, IResponseLogger
     {
-        private readonly LogContentFactory _contentFactory;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseLogger"/> class.
+        /// </summary>
+        /// <param name="contentFactory">Request content value factory.</param>
+        /// <param name="headerFactory">Request header value factory.</param>
         public ResponseLogger(
             LogContentFactory contentFactory,
             LogHeaderFactory headerFactory)
-            : base(contentFactory, headerFactory)
+            : base(headerFactory, contentFactory)
         {
-            _contentFactory = contentFactory;
         }
 
         public async Task LogResponse(ILogger logger, LogLevel level, IStopwatch stopwatch, HttpContext context)
@@ -39,15 +40,9 @@ namespace Onion.Logging.Loggers
             logger.Log(level, text.ToString());
         }
 
-        private async Task<string> ReadBody(HttpResponse response)
+        private Task<string> ReadBody(HttpResponse response)
         {
-            response.Body.Seek(0, SeekOrigin.Begin);
-
-            string body = await _contentFactory.PrepareBody(response.ContentType, response.Body);
-
-            response.Body.Seek(0, SeekOrigin.Begin);
-
-            return body;
+            return ReadContent(response.ContentType, response.Body);
         }
 
         private StringBuilder ResponseHead(HttpRequest request, HttpResponse response, IStopwatch stopwatch)

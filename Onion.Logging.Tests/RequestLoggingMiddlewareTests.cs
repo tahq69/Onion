@@ -268,15 +268,9 @@ Response body
                     next,
                     new ContextLoggerFactory(
                         factory,
-                        new RequestLogger(
-                            new(Enumerable.Empty<IRequestContentLogMiddleware>()),
-                            new(Enumerable.Empty<IHeaderLogMiddleware>())),
-                        new ResponseLogger(
-                            new(Enumerable.Empty<IRequestContentLogMiddleware>()),
-                            new(Enumerable.Empty<IHeaderLogMiddleware>())),
-                        new BasicInfoLogger()
-                    )
-                )
+                        new RequestLogger(new(null), new(null)),
+                        new ResponseLogger(new(null), new(null)),
+                        new BasicInfoLogger()))
             {
             }
 
