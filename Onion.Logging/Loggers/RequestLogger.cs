@@ -11,7 +11,7 @@ namespace Onion.Logging.Loggers
     /// <summary>
     /// HTTP request logger implementation.
     /// </summary>
-    public class RequestLogger : BaseLogger, IRequestLogger
+    public class RequestLogger : ContentLogger, IRequestLogger
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestLogger"/> class.

@@ -84,6 +84,7 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 $"POST https://localhost/master/slave?foo=bar HTTP/1.1{Environment.NewLine}" +
                 $"Host: localhost{Environment.NewLine}" +
+                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}",
                 LogLevel.Debug);
         }
@@ -108,6 +109,7 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 $"POST https://localhost/master/slave?foo=bar HTTP/1.1{Environment.NewLine}" +
                 $"Host: localhost{Environment.NewLine}" +
+                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"request content string{Environment.NewLine}",
@@ -144,6 +146,7 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 $"GET http://localhost/master/slave HTTP/1.1{Environment.NewLine}" +
                 $"Host: localhost{Environment.NewLine}" +
+                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: *modified value*{Environment.NewLine}",
                 LogLevel.Debug);
         }

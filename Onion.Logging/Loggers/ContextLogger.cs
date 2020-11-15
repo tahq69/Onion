@@ -43,7 +43,7 @@ namespace Onion.Logging.Loggers
             using var requestScope = RequestScope();
             using var responseScope = ResponseScope(stopwatch);
 
-            await _responseLogger.LogResponse(_logger, level, stopwatch, _context);
+            await _responseLogger.LogResponse(_logger, level, _context);
         }
 
         public void LogInfo(LogLevel level, IStopwatch stopwatch)

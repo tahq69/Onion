@@ -19,6 +19,7 @@ namespace Onion.Logging.Tests
             string protocol = "HTTP/1.1",
             Dictionary<string, string>? queryParams = null,
             Dictionary<string, StringValues>? headers = null,
+            Dictionary<string, StringValues>? responseHeaders = null,
             string request = "request body",
             HttpStatusCode responseStatus = HttpStatusCode.OK,
             string response = "response body")
@@ -32,24 +33,33 @@ namespace Onion.Logging.Tests
             context.Request.Path = path ?? "/slave";
             context.Request.QueryString = QueryString.Create(queryParams ?? new Dictionary<string, string>());
             context.Request.Protocol = protocol;
+            context.Request.ContentType = "text/plain";
 
             context.Request.Body = new MemoryStream();
             byte[] bodyBytes = Encoding.UTF8.GetBytes(request);
             context.Request.Body.Write(bodyBytes, 0, request.Length);
             context.Request.Body.Position = 0;
+            context.Request.Headers.AddRange(headers);
 
             context.Response.StatusCode = (int)responseStatus;
-            context.Response.WriteAsync(response);
-
-            if (headers is not null)
-            {
-                foreach (var (key, value) in headers)
-                {
-                    context.Request.Headers[key] = value;
-                }
-            }
+            context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(response));
+            context.Response.ContentType = "text/plain";
+            context.Response.Headers.AddRange(responseHeaders);
 
             return context;
+        }
+
+        private static void AddRange(this IHeaderDictionary target, IDictionary<string, StringValues>? values)
+        {
+            if (values is null)
+            {
+                return;
+            }
+
+            foreach ((string? key, StringValues value) in values)
+            {
+                target[key] = value;
+            }
         }
     }
 }

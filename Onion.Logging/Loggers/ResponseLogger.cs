@@ -8,7 +8,10 @@ using Onion.Logging.Interfaces;
 
 namespace Onion.Logging.Loggers
 {
-    public class ResponseLogger : BaseLogger, IResponseLogger
+    /// <summary>
+    /// HTTP request response logger.
+    /// </summary>
+    public class ResponseLogger : ContentLogger, IResponseLogger
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseLogger"/> class.
@@ -22,7 +25,8 @@ namespace Onion.Logging.Loggers
         {
         }
 
-        public async Task LogResponse(ILogger logger, LogLevel level, IStopwatch stopwatch, HttpContext context)
+        /// <inheritdoc cref="IResponseLogger"/>
+        public async Task LogResponse(ILogger logger, LogLevel level, HttpContext context)
         {
             if (level > LogLevel.Debug)
             {
@@ -30,7 +34,7 @@ namespace Onion.Logging.Loggers
             }
 
             HttpResponse response = context.Response;
-            StringBuilder text = ResponseHead(context.Request, response, stopwatch);
+            StringBuilder text = ResponseHead(context.Request, response);
 
             if (level <= LogLevel.Trace)
             {
@@ -45,7 +49,7 @@ namespace Onion.Logging.Loggers
             return ReadContent(response.ContentType, response.Body);
         }
 
-        private StringBuilder ResponseHead(HttpRequest request, HttpResponse response, IStopwatch stopwatch)
+        private StringBuilder ResponseHead(HttpRequest request, HttpResponse response)
         {
             var status = $"{response.StatusCode} {(HttpStatusCode)response.StatusCode}";
             var text = new StringBuilder($"{request.Protocol} {status}{NewLine}");

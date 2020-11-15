@@ -11,16 +11,17 @@ namespace Onion.Logging.Loggers
     /// <summary>
     /// Abstract logger with reusable methods.
     /// </summary>
-    public abstract class BaseLogger
+    public abstract class ContentLogger
     {
         private readonly LogHeaderFactory _headerFactory;
         private readonly LogContentFactory _contentFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseLogger"/> class.
+        /// Initializes a new instance of the <see cref="ContentLogger"/> class.
         /// </summary>
-        /// <param name="headerFactory">Header value factory.</param>
-        protected BaseLogger(LogHeaderFactory headerFactory, LogContentFactory contentFactory)
+        /// <param name="headerFactory">Header value middleware factory.</param>
+        /// <param name="contentFactory">Content value middleware factory.</param>
+        protected ContentLogger(LogHeaderFactory headerFactory, LogContentFactory contentFactory)
         {
             _headerFactory = headerFactory;
             _contentFactory = contentFactory;
