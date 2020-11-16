@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -30,6 +29,8 @@ namespace Onion.Logging.Loggers
             _responseLogger = responseLogger;
             _basicInfoLogger = basicInfoLogger;
         }
+
+        public LogLevel LogLevel => _logger.GetLogLevel();
 
         public async Task LogRequest(LogLevel level)
         {
@@ -63,11 +64,6 @@ namespace Onion.Logging.Loggers
             using var responseScope = _logger.BeginScope(scope);
 
             _logger.LogError(exception, "Error during http request processing");
-        }
-
-        public LogLevel GetLogLevel()
-        {
-            return _logger.GetLogLevel();
         }
 
         private IDisposable RequestScope()

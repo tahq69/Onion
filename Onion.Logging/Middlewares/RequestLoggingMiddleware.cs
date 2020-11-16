@@ -112,7 +112,7 @@ namespace Onion.Logging.Middlewares
                 return LogLevel.None;
             }
 
-            return logger.GetLogLevel();
+            return logger.LogLevel;
         }
 
         private static bool ShouldSkip(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)

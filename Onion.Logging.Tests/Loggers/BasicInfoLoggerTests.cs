@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Loggers;
+using Onion.Logging.Tests.Helpers;
 using Xunit;
 
 namespace Onion.Logging.Tests
@@ -23,7 +24,7 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext();
+            HttpContext context = new FakeHttpContextBuilder().Create();
             BasicInfoLogger sut = new();
 
             // Act
@@ -49,7 +50,7 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = new DefaultHttpContext();
+            HttpContext context = new FakeHttpContextBuilder().Create();
             BasicInfoLogger sut = new();
 
             // Act
@@ -72,10 +73,12 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                method: "POST",
-                scheme: HttpScheme.Https,
-                queryParams: new() { { "cat", "221" } });
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetRequest(
+                    HttpMethod.Post,
+                    HttpScheme.Https,
+                    new() { { "cat", "221" } })
+                .Create();
 
             BasicInfoLogger sut = new();
 
@@ -97,11 +100,15 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                method: "POST",
-                scheme: HttpScheme.Http,
-                responseStatus: HttpStatusCode.InternalServerError,
-                queryParams: new() { { "cats", "1" } });
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetMethod(HttpMethod.Post)
+                .SetScheme(HttpScheme.Http)
+                .SetHost(new("example.com"))
+                .SetPathBase("/primary")
+                .SetPath("/secondary")
+                .SetQuery(new() { { "cats", "1" } })
+                .SetStatus(HttpStatusCode.InternalServerError)
+                .Create();
 
             BasicInfoLogger sut = new();
 
@@ -113,7 +120,7 @@ namespace Onion.Logging.Tests
 
             // Assert
             loggerMock.VerifyLogging(
-                "POST http://localhost/master/slave?cats=1 at 00:00:03:000 with 500 InternalServerError",
+                "POST http://example.com/primary/secondary?cats=1 at 00:00:03:000 with 500 InternalServerError",
                 LogLevel.Information);
         }
     }

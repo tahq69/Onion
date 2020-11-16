@@ -8,6 +8,7 @@ using Moq;
 using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Loggers;
+using Onion.Logging.Tests.Helpers;
 using Xunit;
 
 namespace Onion.Logging.Tests
@@ -24,7 +25,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext();
+            HttpContext context = new FakeHttpContextBuilder().Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
@@ -48,7 +49,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext();
+            HttpContext context = new FakeHttpContextBuilder().Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
@@ -70,11 +71,13 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                method: "POST",
-                scheme: HttpScheme.Https,
-                queryParams: new() { { "foo", "bar" } },
-                headers: new() { { "foo", new(new[] { "bar", "baz" }) } });
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetRequest(
+                    HttpMethod.Post,
+                    HttpScheme.Https,
+                    new() { { "foo", "bar" } },
+                    new() { { "foo", new(new[] { "bar", "baz" }) } })
+                .Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
@@ -84,7 +87,6 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 $"POST https://localhost/master/slave?foo=bar HTTP/1.1{Environment.NewLine}" +
                 $"Host: localhost{Environment.NewLine}" +
-                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}",
                 LogLevel.Debug);
         }
@@ -94,12 +96,15 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                method: "POST",
-                scheme: HttpScheme.Https,
-                queryParams: new() { { "foo", "bar" } },
-                headers: new() { { "foo", new(new[] { "bar", "baz" }) } },
-                request: "request content string");
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetRequestBody("request content string")
+                .SetRequestHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
+                .SetRequestContentType("text/plain")
+                .SetMethod(HttpMethod.Post)
+                .SetScheme(HttpScheme.Https)
+                .SetHost(new("example.org"))
+                .SetQuery(new() { { "foo", "bar" } })
+                .Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
@@ -107,10 +112,10 @@ namespace Onion.Logging.Tests
 
             // Assert
             loggerMock.VerifyLogging(
-                $"POST https://localhost/master/slave?foo=bar HTTP/1.1{Environment.NewLine}" +
-                $"Host: localhost{Environment.NewLine}" +
-                $"Content-Type: text/plain{Environment.NewLine}" +
+                $"POST https://example.org?foo=bar HTTP/1.1{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}" +
+                $"Content-Type: text/plain{Environment.NewLine}" +
+                $"Host: example.org{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"request content string{Environment.NewLine}",
                 LogLevel.Trace);
@@ -125,8 +130,9 @@ namespace Onion.Logging.Tests
             Mock<IHeaderLogMiddleware> headerMiddlewareMock = new();
             var headerMiddlewares = new List<IHeaderLogMiddleware> { headerMiddlewareMock.Object };
             LogHeaderFactory headerFactory = new(headerMiddlewares);
-            HttpContext context = HttpContextExtensions.CreateContext(
-                headers: new() { { "foo", new(new[] { "bar", "baz" }) } });
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetRequest(headers: new() { { "foo", new(new[] { "bar", "baz" }) } })
+                .Create();
 
             RequestLogger sut = new(new(null), headerFactory);
 
@@ -146,7 +152,6 @@ namespace Onion.Logging.Tests
             loggerMock.VerifyLogging(
                 $"GET http://localhost/master/slave HTTP/1.1{Environment.NewLine}" +
                 $"Host: localhost{Environment.NewLine}" +
-                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: *modified value*{Environment.NewLine}",
                 LogLevel.Debug);
         }

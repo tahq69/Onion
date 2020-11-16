@@ -10,6 +10,7 @@ using Moq;
 using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Loggers;
+using Onion.Logging.Tests.Helpers;
 using Xunit;
 
 namespace Onion.Logging.Tests
@@ -49,7 +50,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext();
+            HttpContext context = new FakeHttpContextBuilder().Create();
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
@@ -71,8 +72,9 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                responseHeaders: new() { { "foo", new(new[] { "bar", "baz" }) } });
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetResponseHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
+                .Create();
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
@@ -81,7 +83,6 @@ namespace Onion.Logging.Tests
             // Assert
             loggerMock.VerifyLogging(
                 $"HTTP/1.1 200 OK{Environment.NewLine}" +
-                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}",
                 LogLevel.Debug);
         }
@@ -91,10 +92,11 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             Mock<ILogger> loggerMock = new();
-            HttpContext context = HttpContextExtensions.CreateContext(
-                responseHeaders: new() { { "foo", new(new[] { "bar", "baz" }) } },
-                responseStatus: HttpStatusCode.Conflict,
-                response: "conflict response content");
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetResponseBody("conflict response content")
+                .SetResponseHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
+                .SetStatus(HttpStatusCode.Conflict)
+                .Create();
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
@@ -103,7 +105,6 @@ namespace Onion.Logging.Tests
             // Assert
             loggerMock.VerifyLogging(
                 $"HTTP/1.1 409 Conflict{Environment.NewLine}" +
-                $"Content-Type: text/plain{Environment.NewLine}" +
                 $"foo: bar,baz{Environment.NewLine}" +
                 $"{Environment.NewLine}" +
                 $"conflict response content{Environment.NewLine}",
@@ -117,7 +118,10 @@ namespace Onion.Logging.Tests
             Mock<ILogger> loggerMock = new();
             Mock<IRequestContentLogMiddleware> contentMiddleware = new();
             var contentMiddlewares = new List<IRequestContentLogMiddleware> { contentMiddleware.Object };
-            HttpContext context = HttpContextExtensions.CreateContext(response: "response");
+            HttpContext context = new FakeHttpContextBuilder()
+                .SetResponseBody("response")
+                .SetResponseContentType("text/plain")
+                .Create();
             LogContentFactory contentFactory = new(contentMiddlewares);
             Stream modifiedContent = new MemoryStream(Encoding.UTF8.GetBytes("*modified*"));
             ResponseLogger sut = new(contentFactory, new(null));
