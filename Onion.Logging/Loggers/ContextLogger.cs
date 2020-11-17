@@ -8,6 +8,9 @@ using Onion.Logging.Scopes;
 
 namespace Onion.Logging.Loggers
 {
+    /// <summary>
+    /// HTTP context logger.
+    /// </summary>
     public class ContextLogger : IContextLogger
     {
         private readonly ILogger _logger;
@@ -16,6 +19,14 @@ namespace Onion.Logging.Loggers
         private readonly IResponseLogger _responseLogger;
         private readonly IBasicInfoLogger _basicInfoLogger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContextLogger"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">Logger instance creator.</param>
+        /// <param name="requestLogger">The request detail logger.</param>
+        /// <param name="responseLogger">The response detail logger.</param>
+        /// <param name="basicInfoLogger">The basic request information logger.</param>
+        /// <param name="context">The request context.</param>
         public ContextLogger(
             ILoggerFactory loggerFactory,
             IRequestLogger requestLogger,
@@ -30,8 +41,10 @@ namespace Onion.Logging.Loggers
             _basicInfoLogger = basicInfoLogger;
         }
 
+        /// <inheritdoc cref="IContextLogger" />
         public LogLevel LogLevel => _logger.GetLogLevel();
 
+        /// <inheritdoc cref="IContextLogger" />
         public async Task LogRequest(LogLevel level)
         {
             using var requestScope = RequestScope();
@@ -39,6 +52,7 @@ namespace Onion.Logging.Loggers
             await _requestLogger.LogRequest(_logger, level, _context);
         }
 
+        /// <inheritdoc cref="IContextLogger" />
         public async Task LogResponse(LogLevel level, IStopwatch stopwatch)
         {
             using var requestScope = RequestScope();
@@ -47,6 +61,7 @@ namespace Onion.Logging.Loggers
             await _responseLogger.LogResponse(_logger, level, _context);
         }
 
+        /// <inheritdoc cref="IContextLogger" />
         public void LogInfo(LogLevel level, IStopwatch stopwatch)
         {
             using var requestScope = RequestScope();
@@ -55,7 +70,8 @@ namespace Onion.Logging.Loggers
             _basicInfoLogger.LogBasicInfo(_logger, level, stopwatch, _context);
         }
 
-        public void LogError(Exception exception, IStopwatch stopwatch)
+        /// <inheritdoc cref="IContextLogger" />
+        public void LogError(Exception exception, IStopwatch? stopwatch)
         {
             var statusCode = _context.Response?.StatusCode ?? 500;
             ResponseScope scope = new(statusCode, stopwatch);
