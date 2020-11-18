@@ -24,7 +24,7 @@ namespace Onion.Logging.Tests
                 .SetupGet(request => request.Path)
                 .Returns(new PathString(path));
 
-            EndpointPredicate predicate = new EndpointPredicate(true, new[] { pattern });
+            EndpointPredicate predicate = new(true, new[] { pattern });
 
             // Act
             bool skip = predicate.Filter(requestMock.Object);
@@ -49,7 +49,7 @@ namespace Onion.Logging.Tests
                 .SetupGet(request => request.Path)
                 .Returns(new PathString(path));
 
-            EndpointPredicate predicate = new EndpointPredicate(false, new[] { pattern });
+            EndpointPredicate predicate = new(false, new[] { pattern });
 
             // Act
             bool skip = predicate.Filter(requestMock.Object);
@@ -69,7 +69,7 @@ namespace Onion.Logging.Tests
                 .SetupGet(request => request.Path)
                 .Returns(new PathString("/api/123/foo"));
 
-            EndpointPredicate predicate = new EndpointPredicate(false, new[] { "/api", "/health", "/ping", "/" });
+            EndpointPredicate predicate = new(false, new[] { "/api", "/health", "/ping", "/" });
 
             // Act
             bool skip = predicate.Filter(requestMock.Object);

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -15,6 +14,8 @@ using Onion.Logging.Factories;
 using Onion.Logging.Interfaces;
 using Onion.Logging.Loggers;
 using Onion.Logging.Middlewares;
+using Onion.Logging.Services;
+using Onion.Logging.Tests.Helpers;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
@@ -26,45 +27,27 @@ namespace Onion.Logging.Tests
 {
     public class RequestLoggingMiddlewareTests
     {
-        private HttpContext Context
-        {
-            get
-            {
-                var context = new DefaultHttpContext();
-                context.Request.Method = "GET";
-                context.Request.Scheme = "http";
-                context.Request.Host = new HostString("localhost");
-                context.Request.PathBase = "/master";
-                context.Request.Path = "/slave";
-                context.Request.Protocol = "HTTP/1.1";
-                context.Request.Headers["Host"] = "localhost";
-                context.Request.Headers["Authorization"] = "Basic RE9NQUlOXHVzZXJuYW1lOnBhc3N3b3JkCg==";
-                context.Request.Headers["Foo"] = new StringValues("bar, baz");
-                context.Request.Body = new MemoryStream();
-                byte[] body = Encoding.UTF8.GetBytes("Request body");
-                context.Request.Body.Write(body, 0, body.Length);
-                context.Request.Body.Position = 0;
-                context.SetEndpoint(new Endpoint(
-                    c => Task.CompletedTask,
-                    new EndpointMetadataCollection(new ControllerActionDescriptor { ControllerName = "Fake" }),
-                    "FakeControllerDisplayName"));
-
-                return context;
-            }
-        }
+        private HttpContext Context =>
+            new FakeHttpContextBuilder("HTTP/1.1")
+                .SetMethod(HttpMethod.Get)
+                .SetScheme(HttpScheme.Http)
+                .SetHost(new("localhost"))
+                .SetPathBase("/master")
+                .SetPath("/slave")
+                .SetRequestHeaders(new()
+                {
+                    { "Authorization", "Basic RE9NQUlOXHVzZXJuYW1lOnBhc3N3b3JkCg==" },
+                    { "Foo", new StringValues("bar, baz") }
+                })
+                .SetRequestBody("Request body")
+                .SetEndpoint("Fake")
+                .Create();
 
         [Fact, Trait("Category", "Unit")]
         public async Task RequestLoggingMiddleware_Invoke_InformationLevel()
         {
             // Arrange
-            ServiceProvider provider = new ServiceCollection()
-                .AddSingleton<ILoggerFactory>(i => new SerilogLoggerFactory(new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.TestCorrelator()
-                    .CreateLogger()
-                ))
-                .BuildServiceProvider();
-
+            var provider = CreateServiceProvider(config => config.MinimumLevel.Information());
             ILoggerFactory factory = provider.GetService<ILoggerFactory>();
             ILogger<RequestLoggingMiddleware> logger = factory.CreateLogger<RequestLoggingMiddleware>();
 
@@ -99,14 +82,7 @@ namespace Onion.Logging.Tests
         public async Task RequestLoggingMiddleware_Invoke_DebugLevel()
         {
             // Arrange
-            ServiceProvider provider = new ServiceCollection()
-                .AddSingleton<ILoggerFactory>(i => new SerilogLoggerFactory(new LoggerConfiguration()
-                    .MinimumLevel.Debug()
-                    .WriteTo.TestCorrelator()
-                    .CreateLogger()
-                ))
-                .BuildServiceProvider();
-
+            var provider = CreateServiceProvider(config => config.MinimumLevel.Debug());
             ILoggerFactory factory = provider.GetService<ILoggerFactory>();
             ILogger<RequestLoggingMiddleware> logger = factory.CreateLogger<RequestLoggingMiddleware>();
 
@@ -150,14 +126,7 @@ Foo: Bar
         public async Task RequestLoggingMiddleware_Invoke_TraceLevel()
         {
             // Arrange
-            ServiceProvider provider = new ServiceCollection()
-                .AddSingleton<ILoggerFactory>(i => new SerilogLoggerFactory(new LoggerConfiguration()
-                    .MinimumLevel.Verbose()
-                    .WriteTo.TestCorrelator()
-                    .CreateLogger()
-                ))
-                .BuildServiceProvider();
-
+            var provider = CreateServiceProvider(config => config.MinimumLevel.Verbose());
             ILoggerFactory factory = provider.GetService<ILoggerFactory>();
             ILogger<RequestLoggingMiddleware> logger = factory.CreateLogger<RequestLoggingMiddleware>();
 
@@ -205,14 +174,7 @@ Response body
         public async Task RequestLoggingMiddleware_Invoke_ExceptionLogged()
         {
             // Arrange
-            ServiceProvider provider = new ServiceCollection()
-                .AddSingleton<ILoggerFactory>(i => new SerilogLoggerFactory(new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.TestCorrelator()
-                    .CreateLogger()
-                ))
-                .BuildServiceProvider();
-
+            var provider = CreateServiceProvider(config => config.MinimumLevel.Information());
             ILoggerFactory factory = provider.GetService<ILoggerFactory>();
             ILogger<RequestLoggingMiddleware> logger = factory.CreateLogger<RequestLoggingMiddleware>();
 
@@ -246,6 +208,59 @@ Response body
                 "Error: Error during http request processing { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: GET http://localhost/master/slave at 00:00:00:100 with 500 InternalServerError { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
+        }
+
+        [Fact, Trait("Category", "Unit")]
+        public async Task RequestLoggingMiddleware_Invoke_FatalNothingLogged()
+        {
+            // Arrange
+            var provider = CreateServiceProvider(config => config.MinimumLevel.Fatal());
+            ILoggerFactory factory = provider.GetService<ILoggerFactory>();
+            RequestLoggingMiddlewareUnderTest handler = new(
+                async ctx => await ctx.Response.WriteAsync("Response body"),
+                factory);
+
+            // Act
+            using var _ = TestCorrelator.CreateContext();
+            await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
+
+            // Assert
+            List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
+            actual.Should().BeEmpty();
+        }
+
+        [Fact, Trait("Category", "Unit")]
+        public async Task RequestLoggingMiddleware_Invoke_NoneIfPredicateShouldSkip()
+        {
+            // Arrange
+            var provider = CreateServiceProvider(configuration => configuration.MinimumLevel.Verbose());
+            ILoggerFactory loggerFactory = provider.GetService<ILoggerFactory>();
+            EndpointPredicate predicate = new(exclude: true, patterns: new[] { "/master/*" });
+            RequestLoggingMiddlewareUnderTest handler = new(
+                next: async httpContext => await httpContext.Response.WriteAsync("Response body"),
+                loggerFactory);
+
+            // Act
+            using var _ = TestCorrelator.CreateContext();
+            await handler.Invoke(Context, new[] { predicate });
+
+            // Assert
+            List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
+            actual.Should().BeEmpty();
+        }
+
+        private static ServiceProvider CreateServiceProvider(
+            Func<LoggerConfiguration, LoggerConfiguration> configureLogger)
+        {
+            var logger = configureLogger(new())
+                .WriteTo.TestCorrelator()
+                .CreateLogger();
+
+            SerilogLoggerFactory loggerFactory = new(logger);
+
+            return new ServiceCollection()
+                .AddSingleton<ILoggerFactory>(_ => loggerFactory)
+                .BuildServiceProvider();
         }
 
         private string FormatLogEvent(LogEvent evt)

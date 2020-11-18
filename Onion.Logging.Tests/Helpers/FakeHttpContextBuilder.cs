@@ -137,7 +137,7 @@ namespace Onion.Logging.Tests.Helpers
         private static Endpoint CreateEndpoint(string controllerName)
         {
             return new Endpoint(
-                ctx => Task.CompletedTask,
+                _ => Task.CompletedTask,
                 EndpointMetadata(controllerName),
                 $"{controllerName}Controller");
         }

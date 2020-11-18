@@ -14,12 +14,19 @@ namespace Onion.Logging.Middlewares
         private const StringComparison Comparison = StringComparison.Ordinal;
 
         /// <inheritdoc/>
-        public string Modify(string key, string value) =>
-            key switch
+        public string Modify(string key, string value)
+        {
+            switch (key)
             {
-                "Authorization" when value.StartsWith("Basic ", Comparison) => "Basic *****",
-                "Authorization" when value.StartsWith("Bearer ", Comparison) => "Bearer *****",
-                _ => value,
-            };
+                case "Authorization" when value.StartsWith("Basic ", Comparison):
+                    return "Basic *****";
+
+                case "Authorization" when value.StartsWith("Bearer ", Comparison):
+                    return "Bearer *****";
+
+                default:
+                    return value;
+            }
+        }
     }
 }
