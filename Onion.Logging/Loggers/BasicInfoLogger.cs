@@ -22,8 +22,9 @@ namespace Onion.Logging
             string url = context.Request.GetDisplayUrl();
             var code = context.Response.StatusCode;
             var status = $"{code} {(HttpStatusCode)code}";
+            var message = $"{method} {url} at {stopwatch.Time()} with {status}";
 
-            logger.LogInformation($"{method} {url} at {stopwatch.Time()} with {status}");
+            logger.LogInformation(message);
         }
     }
 }

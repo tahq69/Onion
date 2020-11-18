@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Onion.Application.Interfaces;
 using Onion.Domain.Settings;
 using Onion.Infrastructure.Services;
+using Onion.Logging;
 
 namespace Onion.Infrastructure
 {
@@ -16,10 +17,11 @@ namespace Onion.Infrastructure
         /// Adds Infrastructure DI.
         /// </summary>
         /// <param name="services">DI service.</param>
-        /// <param name="config">Application configuration.</param>
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration config)
+        /// <param name="configuration">Application configuration.</param>
+        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<MailSettings>(config.GetSection("MailSettings"));
+            services.AddRequestLogging(configuration);
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.TryAddTransient<IDateTimeService, DateTimeService>();
             services.TryAddTransient<IEmailService, EmailService>();
         }

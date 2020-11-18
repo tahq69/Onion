@@ -15,16 +15,19 @@ namespace Onion.Logging
         /// </summary>
         /// <param name="services">DI service.</param>
         /// <param name="config">Application configuration.</param>
-        public static void AddLogging(this IServiceCollection services, IConfiguration config)
+        public static void AddRequestLogging(this IServiceCollection services, IConfiguration config)
         {
-            services.AddTransient<IHeaderLogMiddleware, AuthorizationHeaderLoggingMiddleware>();
-
-            // TODO: add LongJsonContentSettings and initialize max length from this config.
-            services.AddTransient<IRequestContentLogMiddleware, LongJsonContentMiddleware>();
-            services.AddTransient<IJsonStreamModifier, JsonStreamModifier>();
             services.AddTransient<IContextLoggerFactory, ContextLoggerFactory>();
             services.AddTransient<IRequestLogger, RequestLogger>();
             services.AddTransient<IResponseLogger, ResponseLogger>();
+            services.AddTransient<IBasicInfoLogger, BasicInfoLogger>();
+
+            services.AddTransient<LogContentFactory>();
+            services.AddTransient<IRequestContentLogMiddleware, LongJsonContentMiddleware>();
+            services.AddTransient<IJsonStreamModifier, JsonStreamModifier>();
+
+            services.AddTransient<LogHeaderFactory>();
+            services.AddTransient<IHeaderLogMiddleware, AuthorizationHeaderLoggingMiddleware>();
         }
 
         /// <summary>
@@ -43,14 +46,14 @@ namespace Onion.Logging
             IEnumerable<string> ignore)
         {
             services.AddSingleton<IHttpRequestPredicate>(provider =>
-                new EndpointPredicate(false, ignore));
+                new EndpointPredicate(true, ignore));
         }
 
         /// <summary>
         /// Adds custom HTTP request logging middleware.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        public static void UseRequestLogging(IApplicationBuilder app)
+        public static void UseRequestLoggingMiddleware(this IApplicationBuilder app)
         {
             app.UseMiddleware<RequestLoggingMiddleware>();
         }

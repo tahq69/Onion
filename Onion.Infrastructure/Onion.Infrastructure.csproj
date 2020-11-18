@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Onion.Application\Onion.Application.csproj" />
     <ProjectReference Include="..\Onion.Domain\Onion.Domain.csproj" />
+    <ProjectReference Include="..\Onion.Logging\Onion.Logging.csproj" />
   </ItemGroup>
 
 </Project>

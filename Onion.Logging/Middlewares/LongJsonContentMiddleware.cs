@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Onion.Logging
@@ -9,15 +10,23 @@ namespace Onion.Logging
     /// </summary>
     public class LongJsonContentMiddleware : IRequestContentLogMiddleware
     {
+        private const string MaxCharCountInFieldSectionKey = "Logging:Request:MaxCharCountInField";
+        private const string LeaveOnTrimSectionKey = "Logging:Request:LeaveOnTrimCharCountInField";
         private readonly IJsonStreamModifier _jsonModifier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LongJsonContentMiddleware"/> class.
         /// </summary>
         /// <param name="jsonModifier">JSON content modifier.</param>
-        public LongJsonContentMiddleware(IJsonStreamModifier jsonModifier)
+        /// <param name="configuration">The key/value application configuration properties.</param>
+        public LongJsonContentMiddleware(IJsonStreamModifier jsonModifier, IConfiguration? configuration)
         {
             _jsonModifier = jsonModifier;
+            if (configuration is not null)
+            {
+                MaxCharCountInField = configuration.GetValue(MaxCharCountInFieldSectionKey, 500);
+                LeaveOnTrim = configuration.GetValue(LeaveOnTrimSectionKey, 10);
+            }
         }
 
         /// <summary>
@@ -29,7 +38,7 @@ namespace Onion.Logging
         /// If <paramref name="maxCharCountInField"/> is less than 1.
         /// </exception>
         public LongJsonContentMiddleware(IJsonStreamModifier jsonModifier, int maxCharCountInField)
-            : this(jsonModifier)
+            : this(jsonModifier, null)
         {
             if (maxCharCountInField < 1)
             {

@@ -1,24 +1,18 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Onion.Application;
-using Onion.Application.Features.ProductFeatures.Commands;
 using Onion.Application.Interfaces;
 using Onion.Data;
 using Onion.Identity;
 using Onion.Infrastructure;
-using Onion.Web.Extensions;
+using Onion.Logging;
 using Onion.Web.Middlewares;
 using Onion.Web.Services;
 
@@ -110,6 +104,7 @@ namespace Onion.Web
                 FileProvider = new PhysicalFileProvider(assetPath),
             });
             app.UseRouting();
+            app.UseRequestLoggingMiddleware();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<ErrorHandlerMiddleware>();

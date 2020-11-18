@@ -38,7 +38,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "[\"1\",\"2\"]";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
@@ -57,7 +57,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "{\"1\":1,\"2\":true}";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
@@ -76,7 +76,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "{\"1\":null,\"2\":true}";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
@@ -95,7 +95,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "{\"1\":1.1,\"object\":[\"1\",{\"2\":null}]}";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
@@ -114,7 +114,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "This message is not a JSON string";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
@@ -133,7 +133,7 @@ namespace Onion.Logging.Tests
         {
             // Arrange
             JsonStreamModifier jsonBuilder = new();
-            LongJsonContentMiddleware sut = new(jsonBuilder);
+            LongJsonContentMiddleware sut = new(jsonBuilder, null);
             string content = "This message is not a JSON string";
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             MemoryStream output = new();
