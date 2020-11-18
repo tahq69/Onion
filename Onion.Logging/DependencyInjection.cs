@@ -2,11 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Onion.Logging.Factories;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Loggers;
-using Onion.Logging.Middlewares;
-using Onion.Logging.Services;
 
 namespace Onion.Logging
 {
@@ -55,7 +50,7 @@ namespace Onion.Logging
         /// Adds custom HTTP request logging middleware.
         /// </summary>
         /// <param name="app">The application builder.</param>
-        public static void UseLogging(IApplicationBuilder app)
+        public static void UseRequestLogging(IApplicationBuilder app)
         {
             app.UseMiddleware<RequestLoggingMiddleware>();
         }

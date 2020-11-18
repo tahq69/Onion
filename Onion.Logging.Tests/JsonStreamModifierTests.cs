@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using System.Text;
 using FluentAssertions;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Services;
 using Xunit;
 
 namespace Onion.Logging.Tests

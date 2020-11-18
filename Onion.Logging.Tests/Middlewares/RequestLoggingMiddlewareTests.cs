@@ -10,12 +10,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Onion.Logging.Factories;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Loggers;
-using Onion.Logging.Middlewares;
-using Onion.Logging.Services;
-using Onion.Logging.Tests.Helpers;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
@@ -73,9 +67,9 @@ namespace Onion.Logging.Tests
             // Assert
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
             actual.Should().BeEquivalentTo(
-                "Information: Before { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }",
-                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
-                "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
+                "Information: Before { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }",
+                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Information: After { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }");
         }
 
         [Fact, Trait("Category", "Unit")]
@@ -109,17 +103,17 @@ namespace Onion.Logging.Tests
             // Assert
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
             actual.Should().BeEquivalentTo(
-                "Information: Before { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }",
+                "Information: Before { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }",
                 @"Debug: GET http://localhost/master/slave HTTP/1.1
 Host: localhost
 Authorization: Basic RE9NQUlOXHVzZXJuYW1lOnBhc3N3b3JkCg==
 Foo: bar, baz
- { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+ { SourceContext: ""Onion.Logging.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
                 @"Debug: HTTP/1.1 200 OK
 Foo: Bar
- { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
-                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
-                "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
+ { SourceContext: ""Onion.Logging.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Information: After { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }");
         }
 
         [Fact, Trait("Category", "Unit")]
@@ -153,21 +147,21 @@ Foo: Bar
             // Assert
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
             actual.Should().BeEquivalentTo(
-                "Information: Before { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }",
+                "Information: Before { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }",
                 @"Verbose: GET http://localhost/master/slave HTTP/1.1
 Host: localhost
 Authorization: Basic RE9NQUlOXHVzZXJuYW1lOnBhc3N3b3JkCg==
 Foo: bar, baz
 
 Request body
- { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+ { SourceContext: ""Onion.Logging.RequestLoggingMiddleware.Fake"", EventName: ""HttpRequest"", Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
                 @"Verbose: HTTP/1.1 200 OK
 Foo: Bar
 
 Response body
- { SourceContext: ""Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
-                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
-                "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
+ { SourceContext: ""Onion.Logging.RequestLoggingMiddleware.Fake"", EventName: ""HttpResponse"", StatusCode: 200, Elapsed: 100, Endpoint: ""http://localhost/master/slave"", HttpMethod: ""GET"" }",
+                "Information: GET http://localhost/master/slave at 00:00:00:100 with 200 OK { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 200, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Information: After { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }");
         }
 
         [Fact, Trait("Category", "Unit")]
@@ -204,10 +198,10 @@ Response body
             ex1.Message.Should().Be("Exception message");
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
             actual.Should().BeEquivalentTo(
-                "Information: Before { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }",
-                "Error: Error during http request processing { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
-                "Information: GET http://localhost/master/slave at 00:00:00:100 with 500 InternalServerError { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
-                "Information: After { SourceContext: \"Onion.Logging.Middlewares.RequestLoggingMiddleware\" }");
+                "Information: Before { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }",
+                "Error: Error during http request processing { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Information: GET http://localhost/master/slave at 00:00:00:100 with 500 InternalServerError { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Information: After { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }");
         }
 
         [Fact, Trait("Category", "Unit")]

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// System stopwatch wrapper contract. Is created to implement ease library unit-testing.

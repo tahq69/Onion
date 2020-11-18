@@ -3,10 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Onion.Logging.Factories;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Loggers
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP request response logger.

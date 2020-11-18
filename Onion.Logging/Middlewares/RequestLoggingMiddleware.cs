@@ -5,10 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Services;
 
-namespace Onion.Logging.Middlewares
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP request logging middleware.
@@ -52,7 +50,7 @@ namespace Onion.Logging.Middlewares
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task Invoke(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
         {
-            var logger = _contextLoggerFactory.Create(context);
+            var logger = _contextLoggerFactory.Create<RequestLoggingMiddleware>(context);
             var level = Level(context, predicates, logger);
             var stopwatch = CreateStopwatch();
             stopwatch.Start();

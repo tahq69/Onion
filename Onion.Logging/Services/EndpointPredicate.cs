@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Services
+namespace Onion.Logging
 {
     /// <summary>
     /// Filter requests from being logged by endpoint uri.

@@ -1,7 +1,6 @@
 ﻿using System;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Middlewares
+namespace Onion.Logging
 {
     /// <summary>
     /// Authorization header value middleware.

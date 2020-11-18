@@ -7,10 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Loggers;
-using Onion.Logging.Middlewares;
-using Onion.Logging.Tests.Helpers;
 using Xunit;
 
 namespace Onion.Logging.Tests
@@ -26,7 +22,7 @@ namespace Onion.Logging.Tests
             Mock<IBasicInfoLogger> basicLoggerMock = new();
             HttpContext context = new FakeHttpContextBuilder().SetEndpoint("Name").Create();
 
-            ContextLogger sut = new(
+            ContextLogger<RequestLoggingMiddleware> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -34,7 +30,7 @@ namespace Onion.Logging.Tests
                 context);
 
             loggerFactoryMock.Verify(
-                factory => factory.CreateLogger("Onion.Logging.Middlewares.RequestLoggingMiddleware.Name"),
+                factory => factory.CreateLogger("Onion.Logging.RequestLoggingMiddleware.Name"),
                 Times.Once);
         }
 
@@ -47,7 +43,7 @@ namespace Onion.Logging.Tests
             Mock<IBasicInfoLogger> basicLoggerMock = new();
             HttpContext context = new FakeHttpContextBuilder().Create();
 
-            ContextLogger sut = new(
+            ContextLogger<RequestLoggingMiddleware> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -55,7 +51,7 @@ namespace Onion.Logging.Tests
                 context);
 
             loggerFactoryMock.Verify(
-                factory => factory.CreateLogger("Onion.Logging.Middlewares.RequestLoggingMiddleware"),
+                factory => factory.CreateLogger("Onion.Logging.RequestLoggingMiddleware"),
                 Times.Once);
         }
 
@@ -74,7 +70,7 @@ namespace Onion.Logging.Tests
                 .SetHost(new("example.com"))
                 .Create();
 
-            ContextLogger sut = new(
+            ContextLogger<int> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -119,7 +115,7 @@ namespace Onion.Logging.Tests
                 .SetStatus(HttpStatusCode.Conflict)
                 .Create();
 
-            ContextLogger sut = new(
+            ContextLogger<int> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -178,7 +174,7 @@ namespace Onion.Logging.Tests
                 .SetStatus(HttpStatusCode.Ambiguous)
                 .Create();
 
-            ContextLogger sut = new(
+            ContextLogger<int> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -238,7 +234,7 @@ namespace Onion.Logging.Tests
                 .SetStatus(HttpStatusCode.Forbidden)
                 .Create();
 
-            ContextLogger sut = new(
+            ContextLogger<int> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,
@@ -286,7 +282,7 @@ namespace Onion.Logging.Tests
                 .SetStatus(HttpStatusCode.InternalServerError)
                 .Create();
 
-            ContextLogger sut = new(
+            ContextLogger<int> sut = new(
                 loggerFactoryMock.Object,
                 requestLoggerMock.Object,
                 responseLoggerMock.Object,

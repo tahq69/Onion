@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// Logging request content middleware contract.

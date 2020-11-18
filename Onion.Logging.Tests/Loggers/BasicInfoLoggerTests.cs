@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Loggers;
-using Onion.Logging.Tests.Helpers;
 using Xunit;
 
 namespace Onion.Logging.Tests

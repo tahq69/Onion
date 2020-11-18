@@ -1,4 +1,4 @@
-﻿namespace Onion.Logging.Interfaces
+﻿namespace Onion.Logging
 {
     /// <summary>
     /// Logging request header value parser contract.

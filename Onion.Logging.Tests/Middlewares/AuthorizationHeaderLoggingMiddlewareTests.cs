@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Onion.Logging.Middlewares;
 using Xunit;
 
 namespace Onion.Logging.Tests

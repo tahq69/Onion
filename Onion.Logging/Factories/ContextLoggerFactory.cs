@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Loggers;
 
-namespace Onion.Logging.Factories
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP context logger factory.
@@ -35,9 +33,9 @@ namespace Onion.Logging.Factories
         }
 
         /// <inheritdoc cref="IContextLoggerFactory"/>
-        public IContextLogger Create(HttpContext context)
+        public IContextLogger Create<T>(HttpContext context)
         {
-            return new ContextLogger(_loggerFactory, _requestLogger, _responseLogger, _basicInfoLogger, context);
+            return new ContextLogger<T>(_loggerFactory, _requestLogger, _responseLogger, _basicInfoLogger, context);
         }
     }
 }

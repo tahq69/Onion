@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Onion.Logging.Tests.Helpers
+namespace Onion.Logging.Tests
 {
     public class FakeHttpContextBuilder
     {

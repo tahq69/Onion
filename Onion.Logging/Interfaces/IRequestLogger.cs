@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// Request logger contract.

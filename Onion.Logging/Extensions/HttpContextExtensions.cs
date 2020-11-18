@@ -4,8 +4,16 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Onion.Logging
 {
+    /// <summary>
+    /// HTTP context extension methods.
+    /// </summary>
     internal static class HttpContextExtensions
     {
+        /// <summary>
+        /// Get invoked controller name from HTTP context.
+        /// </summary>
+        /// <param name="context">The HTTP context.</param>
+        /// <returns>Controller name if available.</returns>
         public static string? ControllerName(this HttpContext context)
         {
             var endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;

@@ -3,9 +3,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Middlewares;
-using Onion.Logging.Services;
 using Onion.Tests;
 using Xunit;
 

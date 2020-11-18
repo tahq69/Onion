@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using Newtonsoft.Json;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Middlewares
+namespace Onion.Logging
 {
     /// <summary>
     /// JSON content middleware. Trims property values if it exceeds max value.

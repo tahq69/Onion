@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// JSON stream modifier contract.

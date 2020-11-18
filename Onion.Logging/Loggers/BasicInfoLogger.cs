@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Loggers
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP request basic information logger implementation.

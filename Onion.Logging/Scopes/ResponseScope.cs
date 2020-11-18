@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Scopes
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP request response logging scope.

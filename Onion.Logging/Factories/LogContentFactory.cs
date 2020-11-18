@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Factories
+namespace Onion.Logging
 {
     /// <summary>
     /// Logging content factory to resolve body content.

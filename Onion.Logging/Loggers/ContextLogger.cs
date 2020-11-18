@@ -3,15 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Scopes;
 
-namespace Onion.Logging.Loggers
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP context logger.
     /// </summary>
-    public class ContextLogger : IContextLogger
+    /// <typeparam name="T">Type of the logger instance name.</typeparam>
+    public class ContextLogger<T> : IContextLogger
     {
         private readonly ILogger _logger;
         private readonly HttpContext _context;
@@ -20,7 +19,7 @@ namespace Onion.Logging.Loggers
         private readonly IBasicInfoLogger _basicInfoLogger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContextLogger"/> class.
+        /// Initializes a new instance of the <see cref="ContextLogger{T}"/> class.
         /// </summary>
         /// <param name="loggerFactory">Logger instance creator.</param>
         /// <param name="requestLogger">The request detail logger.</param>
@@ -34,7 +33,7 @@ namespace Onion.Logging.Loggers
             IBasicInfoLogger basicInfoLogger,
             HttpContext context)
         {
-            _logger = loggerFactory.ControllerLogger(context);
+            _logger = loggerFactory.ControllerLogger<T>(context);
             _context = context;
             _requestLogger = requestLogger;
             _responseLogger = responseLogger;

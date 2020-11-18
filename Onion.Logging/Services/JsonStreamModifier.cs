@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Services
+namespace Onion.Logging
 {
     /// <summary>
     /// JSON stream modifier.

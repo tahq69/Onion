@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Services
+namespace Onion.Logging
 {
     /// <summary>
     /// Logging stopwatch implementation.

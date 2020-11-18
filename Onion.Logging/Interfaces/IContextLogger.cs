@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP context logger contract.

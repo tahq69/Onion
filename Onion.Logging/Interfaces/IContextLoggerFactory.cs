@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Onion.Logging.Interfaces
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP context logger factory contract.
@@ -11,7 +11,8 @@ namespace Onion.Logging.Interfaces
         /// Create HTTP context logger instance for provided <paramref name="context"/>.
         /// </summary>
         /// <param name="context">HTTP context.</param>
+        /// <typeparam name="T">Type of the logger instance name.</typeparam>
         /// <returns>New instance of the <seealso cref="IContextLogger"/>.</returns>
-        IContextLogger Create(HttpContext context);
+        IContextLogger Create<T>(HttpContext context);
     }
 }

@@ -4,9 +4,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
-using Onion.Logging.Factories;
 
-namespace Onion.Logging.Loggers
+namespace Onion.Logging
 {
     /// <summary>
     /// Abstract logger with reusable methods.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Onion.Logging.Scopes
+namespace Onion.Logging
 {
     /// <summary>
     /// HTTP request logging scope.

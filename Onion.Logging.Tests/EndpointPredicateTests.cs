@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Onion.Logging.Services;
 using Xunit;
 
 namespace Onion.Logging.Tests

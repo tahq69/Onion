@@ -4,10 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Onion.Logging.Factories;
-using Onion.Logging.Interfaces;
-using Onion.Logging.Middlewares;
-using Onion.Logging.Services;
 using Xunit;
 
 namespace Onion.Logging.Tests

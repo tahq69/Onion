@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Primitives;
-using Onion.Logging.Interfaces;
 
-namespace Onion.Logging.Factories
+namespace Onion.Logging
 {
     /// <summary>
     /// Header logging factory.
