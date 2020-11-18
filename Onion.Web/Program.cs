@@ -1,76 +1,89 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Onion.Identity.Models;
+using Onion.Identity.Seeds;
 using Serilog;
-using System;
-using System.Threading.Tasks;
+using Serilog.Core;
 
 namespace Onion.Web
 {
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Hosting;
-
     /// <summary>
     /// The application entry class.
     /// </summary>
     public static class Program
     {
+        private static ILogger Log => Serilog.Log.ForContext(typeof(Program));
+
         /// <summary>
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The entry arguments.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            // Read Configuration from appSettings
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            Serilog.Log.Logger = CreateLogger();
+            Log.Information("Starting application");
 
-            // Initialize Logger
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .CreateLogger();
+            CreateHostBuilder(args).Build()
+                .SeedDatabase().GetAwaiter().GetResult()
+                .Run();
 
-            var host = Program.CreateHostBuilder(args).Build();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-
-                    await Identity.Seeds.DefaultRoles.SeedAsync(userManager, roleManager);
-                    await Identity.Seeds.DefaultSuperAdmin.SeedAsync(userManager, roleManager);
-                    await Identity.Seeds.DefaultBasicUser.SeedAsync(userManager, roleManager);
-                    Log.Information("Finished Seeding Default Data");
-                    Log.Information("Application Starting");
-                }
-                catch (Exception ex)
-                {
-                    Log.Warning(ex, "An error occurred seeding the DB");
-                }
-                finally
-                {
-                    Log.CloseAndFlush();
-                }
-            }
-
-            host.Run();
+            Log.Information("Application exit");
         }
 
-        /// <summary>
-        /// Creates the host builder instance for web application.
-        /// </summary>
-        /// <param name="args">The entry arguments.</param>
-        /// <returns>Application host builder.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+
+
+        private static Logger CreateLogger()
+        {
+            var configuration = BuildConfiguration();
+            return new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
+
+        private static IConfigurationRoot BuildConfiguration()
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            return new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                .AddEnvironmentVariables()
+                .Build();
+        }
+
+        private static async Task<IHost> SeedDatabase(this IHost host)
+        {
+            using var scope = host.Services.CreateScope();
+
+            try
+            {
+                await SeedDatabase(scope.ServiceProvider);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "An error occurred seeding the DB");
+            }
+
+            return host;
+        }
+
+        private static async Task SeedDatabase(IServiceProvider services)
+        {
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+
+            await DefaultRoles.SeedAsync(userManager, roleManager);
+            await DefaultSuperAdmin.SeedAsync(userManager, roleManager);
+            await DefaultBasicUser.SeedAsync(userManager, roleManager);
+            Log.Information("Finished seeding default data");
+        }
     }
 }

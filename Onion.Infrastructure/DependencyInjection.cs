@@ -21,6 +21,8 @@ namespace Onion.Infrastructure
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddRequestLogging(configuration);
+            services.AddRequestLoggingIgnorePredicate(new[] { "/swagger/*" });
+            services.AddTransient<IHeaderLogMiddleware, CookieHeaderLoggingMiddleware>();
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.TryAddTransient<IDateTimeService, DateTimeService>();
             services.TryAddTransient<IEmailService, EmailService>();

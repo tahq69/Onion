@@ -36,6 +36,7 @@ namespace Onion.Logging.Tests
         [InlineData("/health", "/api/123/foo", false)]
         [InlineData("/health", "/health-ui", false)]
         [InlineData("/health", "/health", true)]
+        [InlineData("/health", "/health/sub", false)]
         [InlineData("/health", "/", false)]
         [InlineData("/health", "", false)]
         public void EndpointPredicate_Filter_IncludePatterns(string pattern, string path, bool expected)

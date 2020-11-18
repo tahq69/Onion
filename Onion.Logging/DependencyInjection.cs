@@ -41,12 +41,12 @@ namespace Onion.Logging
         /// </code>
         /// Will exclude all request logs to /api/swagger* and /api/healthchecks*.
         /// </example>
-        public static void AddLogEndpointIgnorePredicate(
+        public static void AddRequestLoggingIgnorePredicate(
             this IServiceCollection services,
             IEnumerable<string> ignore)
         {
             services.AddSingleton<IHttpRequestPredicate>(provider =>
-                new EndpointPredicate(true, ignore));
+                new EndpointPredicate(false, ignore));
         }
 
         /// <summary>

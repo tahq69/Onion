@@ -50,4 +50,8 @@
     <ProjectReference Include="..\Onion.Data\Onion.Data.csproj" />
     <ProjectReference Include="..\Onion.Shared\Onion.Shared.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs" />
+  </ItemGroup>
 </Project>
