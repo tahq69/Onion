@@ -40,7 +40,7 @@ namespace Onion.Logging.Tests
             ILogger? logger = null;
 
             // Act
-            Action act = () => logger.GetLogLevel();
+            Action act = () => logger!.GetLogLevel();
 
             // Assert
             act.Should()

@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using NSubstitute;
+using Moq;
 using Onion.Logging.Services;
 using Xunit;
 
@@ -17,13 +17,17 @@ namespace Onion.Logging.Tests
         public void EndpointPredicate_Filter_ExcludePatterns(string pattern, string path, bool expected)
         {
             // Arrange
-            var req = Substitute.For<HttpRequest>();
-            req.Path.Returns(new PathString(path));
+            Mock<HttpRequest> requestMock = new();
+
+            // Mock
+            requestMock
+                .SetupGet(request => request.Path)
+                .Returns(new PathString(path));
 
             EndpointPredicate predicate = new EndpointPredicate(true, new[] { pattern });
 
             // Act
-            bool skip = predicate.Filter(req);
+            bool skip = predicate.Filter(requestMock.Object);
 
             // Assert
             skip.Should().Be(expected);
@@ -38,13 +42,17 @@ namespace Onion.Logging.Tests
         public void EndpointPredicate_Filter_IncludePatterns(string pattern, string path, bool expected)
         {
             // Arrange
-            var req = Substitute.For<HttpRequest>();
-            req.Path.Returns(new PathString(path));
+            Mock<HttpRequest> requestMock = new();
+
+            // Mock
+            requestMock
+                .SetupGet(request => request.Path)
+                .Returns(new PathString(path));
 
             EndpointPredicate predicate = new EndpointPredicate(false, new[] { pattern });
 
             // Act
-            bool skip = predicate.Filter(req);
+            bool skip = predicate.Filter(requestMock.Object);
 
             // Assert
             skip.Should().Be(expected);
@@ -54,13 +62,17 @@ namespace Onion.Logging.Tests
         public void EndpointPredicate_Filter_MultipleIncludePatterns()
         {
             // Arrange
-            var req = Substitute.For<HttpRequest>();
-            req.Path.Returns(new PathString("/api/123/foo"));
+            Mock<HttpRequest> requestMock = new();
+
+            // Mock
+            requestMock
+                .SetupGet(request => request.Path)
+                .Returns(new PathString("/api/123/foo"));
 
             EndpointPredicate predicate = new EndpointPredicate(false, new[] { "/api", "/health", "/ping", "/" });
 
             // Act
-            bool skip = predicate.Filter(req);
+            bool skip = predicate.Filter(requestMock.Object);
 
             // Assert
             skip.Should().BeFalse();

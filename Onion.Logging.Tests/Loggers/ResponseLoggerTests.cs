@@ -30,7 +30,7 @@ namespace Onion.Logging.Tests
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, level, null);
+            await sut.LogResponse(loggerMock.Object, level, null!);
 
             // Assert
             loggerMock.Verify(
