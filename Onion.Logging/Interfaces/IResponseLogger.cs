@@ -14,8 +14,9 @@ namespace Onion.Logging
         /// </summary>
         /// <param name="logger">The actual logger instance.</param>
         /// <param name="level">Current logging level.</param>
-        /// <param name="context">The HTTP request context.</param>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="response">The HTTP response.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        Task LogResponse(ILogger logger, LogLevel level, HttpContext context);
+        Task LogResponse(ILogger logger, LogLevel level, HttpRequest request, HttpResponse response);
     }
 }

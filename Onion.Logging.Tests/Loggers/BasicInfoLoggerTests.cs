@@ -21,10 +21,12 @@ namespace Onion.Logging.Tests
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
             HttpContext context = new FakeHttpContextBuilder().Create();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, level, stopwatchMock.Object, context);
+            sut.LogBasicInfo(loggerMock.Object, level, request, response);
 
             // Assert
             loggerMock.Verify(
@@ -47,10 +49,12 @@ namespace Onion.Logging.Tests
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
             HttpContext context = new FakeHttpContextBuilder().Create();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, level, stopwatchMock.Object, context);
+            sut.LogBasicInfo(loggerMock.Object, level, request, response);
 
             // Assert
             loggerMock.Verify(
@@ -69,6 +73,8 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
+            stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(2));
+
             HttpContext context = new FakeHttpContextBuilder()
                 .SetRequest(
                     HttpMethod.Post,
@@ -76,13 +82,12 @@ namespace Onion.Logging.Tests
                     new() { { "cat", "221" } })
                 .Create();
 
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             BasicInfoLogger sut = new();
 
-            // Mock
-            stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(2));
-
             // Act
-            sut.LogBasicInfo(loggerMock.Object, LogLevel.Trace, stopwatchMock.Object, context);
+            sut.LogBasicInfo(loggerMock.Object, LogLevel.Trace, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -96,6 +101,8 @@ namespace Onion.Logging.Tests
             // Arrange
             Mock<ILogger> loggerMock = new();
             Mock<IStopwatch> stopwatchMock = new();
+            stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(3));
+
             HttpContext context = new FakeHttpContextBuilder()
                 .SetMethod(HttpMethod.Post)
                 .SetScheme(HttpScheme.Http)
@@ -106,13 +113,12 @@ namespace Onion.Logging.Tests
                 .SetStatus(HttpStatusCode.InternalServerError)
                 .Create();
 
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             BasicInfoLogger sut = new();
 
-            // Mock
-            stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(3));
-
             // Act
-            sut.LogBasicInfo(loggerMock.Object, LogLevel.Debug, stopwatchMock.Object, context);
+            sut.LogBasicInfo(loggerMock.Object, LogLevel.Debug, request, response);
 
             // Assert
             loggerMock.VerifyLogging(

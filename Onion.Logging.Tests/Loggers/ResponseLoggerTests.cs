@@ -26,7 +26,7 @@ namespace Onion.Logging.Tests
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, level, null!);
+            await sut.LogResponse(loggerMock.Object, level, null!, null!);
 
             // Assert
             loggerMock.Verify(
@@ -50,7 +50,7 @@ namespace Onion.Logging.Tests
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, level, context);
+            await sut.LogResponse(loggerMock.Object, level, context.Request, context.Response);
 
             // Assert
             loggerMock.Verify(
@@ -74,7 +74,7 @@ namespace Onion.Logging.Tests
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Debug, context);
+            await sut.LogResponse(loggerMock.Object, LogLevel.Debug, context.Request, context.Response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -96,7 +96,7 @@ namespace Onion.Logging.Tests
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context);
+            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context.Request, context.Response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -132,7 +132,7 @@ namespace Onion.Logging.Tests
                 .Callback<Stream, Stream>((input, output) => modifiedContent.CopyTo(output));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context);
+            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context.Request, context.Response);
 
             // Assert
             loggerMock.VerifyLogging(

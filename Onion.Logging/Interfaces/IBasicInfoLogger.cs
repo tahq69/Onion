@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Onion.Logging
 {
@@ -13,8 +12,8 @@ namespace Onion.Logging
         /// </summary>
         /// <param name="logger">The actual logger to write.</param>
         /// <param name="level">Current request logging level.</param>
-        /// <param name="stopwatch">Request execution time measure.</param>
-        /// <param name="context">Current request context.</param>
-        void LogBasicInfo(ILogger logger, LogLevel level, IStopwatch stopwatch, HttpContext context);
+        /// <param name="request">The HTTP request details.</param>
+        /// <param name="response">The HTTP response details.</param>
+        void LogBasicInfo(ILogger logger, LogLevel level, RequestDetails request, ResponseDetails response);
     }
 }

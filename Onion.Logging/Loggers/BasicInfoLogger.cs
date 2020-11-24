@@ -1,7 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Onion.Logging
 {
@@ -11,18 +8,15 @@ namespace Onion.Logging
     public class BasicInfoLogger : IBasicInfoLogger
     {
         /// <inheritdoc cref="IBasicInfoLogger"/>
-        public void LogBasicInfo(ILogger logger, LogLevel level, IStopwatch stopwatch, HttpContext context)
+        public void LogBasicInfo(ILogger logger, LogLevel level, RequestDetails request, ResponseDetails response)
         {
             if (level > LogLevel.Information)
             {
                 return;
             }
 
-            string method = context.Request.Method;
-            string url = context.Request.GetDisplayUrl();
-            var code = context.Response.StatusCode;
-            var status = $"{code} {(HttpStatusCode)code}";
-            var message = $"{method} {url} at {stopwatch.Time()} with {status}";
+            var status = $"{(int)response.StatusCode} {response.StatusCode}";
+            var message = $"{request.Method} {request.Url} at {response.Time} with {status}";
 
             logger.LogInformation(message);
         }

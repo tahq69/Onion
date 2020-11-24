@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -46,22 +44,21 @@ namespace Onion.Logging
         /// </list>
         /// </summary>
         /// <param name="context">HTTP execution context.</param>
-        /// <param name="predicates">Collection of predicates to be used to exclude request from logging.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task Invoke(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
+        public async Task Invoke(HttpContext context)
         {
             var logger = _contextLoggerFactory.Create<RequestLoggingMiddleware>(context);
-            var level = Level(context, predicates, logger);
+            var level = logger.LogLevel;
             var stopwatch = CreateStopwatch();
             stopwatch.Start();
 
             try
             {
-                await logger.LogRequest(level);
+                await logger.LogRequest();
 
                 Stream originalBodyStream = context.Response.Body;
                 await using MemoryStream temp = new();
-                if (level <= LogLevel.Trace)
+                if (logger.LogLevel <= LogLevel.Trace)
                 {
                     context.Response.Body = temp;
                 }
@@ -72,8 +69,8 @@ namespace Onion.Logging
 
                 stopwatch.Stop();
 
-                await logger.LogResponse(level, stopwatch);
-                if (level <= LogLevel.Trace)
+                await logger.LogResponse(stopwatch);
+                if (logger.LogLevel <= LogLevel.Trace)
                 {
                     await temp.CopyToAsync(originalBodyStream);
                 }
@@ -87,7 +84,7 @@ namespace Onion.Logging
             }
             finally
             {
-                logger.LogInfo(level, stopwatch);
+                logger.LogInfo(stopwatch);
             }
         }
 
@@ -98,24 +95,6 @@ namespace Onion.Logging
         protected virtual IStopwatch CreateStopwatch()
         {
             return new LoggingStopwatch();
-        }
-
-        private static LogLevel Level(
-            HttpContext context,
-            IEnumerable<IHttpRequestPredicate> predicates,
-            IContextLogger logger)
-        {
-            if (ShouldSkip(context, predicates))
-            {
-                return LogLevel.None;
-            }
-
-            return logger.LogLevel;
-        }
-
-        private static bool ShouldSkip(HttpContext context, IEnumerable<IHttpRequestPredicate> predicates)
-        {
-            return predicates.Any(predicate => predicate.Filter(context.Request));
         }
     }
 }

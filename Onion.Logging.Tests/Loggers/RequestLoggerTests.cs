@@ -25,7 +25,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, level, context);
+            await sut.LogRequest(loggerMock.Object, level, context.Request);
 
             // Assert
             loggerMock.Verify(
@@ -49,7 +49,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, level, context);
+            await sut.LogRequest(loggerMock.Object, level, context.Request);
 
             // Assert
             loggerMock.Verify(
@@ -77,7 +77,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context);
+            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context.Request);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -104,7 +104,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Trace, context);
+            await sut.LogRequest(loggerMock.Object, LogLevel.Trace, context.Request);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -142,7 +142,7 @@ namespace Onion.Logging.Tests
                 .Returns("*modified value*");
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context);
+            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context.Request);
 
             // Assert
             loggerMock.VerifyLogging(

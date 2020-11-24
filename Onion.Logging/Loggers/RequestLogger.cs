@@ -24,14 +24,13 @@ namespace Onion.Logging
         }
 
         /// <inheritdoc cref="IRequestLogger"/>
-        public async Task LogRequest(ILogger logger, LogLevel level, HttpContext context)
+        public async Task LogRequest(ILogger logger, LogLevel level, HttpRequest request)
         {
             if (level > LogLevel.Debug)
             {
                 return;
             }
 
-            HttpRequest request = context.Request;
             StringBuilder text = RequestHead(request);
 
             if (level <= LogLevel.Trace)

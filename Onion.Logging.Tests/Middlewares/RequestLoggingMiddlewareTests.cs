@@ -61,7 +61,7 @@ namespace Onion.Logging.Tests
             // Act
             using var _ = TestCorrelator.CreateContext();
             logger.LogInformation("Before");
-            await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
+            await handler.Invoke(Context);
             logger.LogInformation("After");
 
             // Assert
@@ -97,7 +97,7 @@ namespace Onion.Logging.Tests
             // Act
             using var _ = TestCorrelator.CreateContext();
             logger.LogInformation("Before");
-            await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
+            await handler.Invoke(Context);
             logger.LogInformation("After");
 
             // Assert
@@ -141,7 +141,7 @@ Foo: Bar
             // Act
             using var _ = TestCorrelator.CreateContext();
             logger.LogInformation("Before");
-            await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
+            await handler.Invoke(Context);
             logger.LogInformation("After");
 
             // Assert
@@ -188,10 +188,7 @@ Response body
             // Act
             using var _ = TestCorrelator.CreateContext();
             logger.LogInformation("Before");
-            Exception ex1 = await Assert.ThrowsAsync<Exception>(async () =>
-            {
-                await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
-            });
+            Exception ex1 = await Assert.ThrowsAsync<Exception>(async () => { await handler.Invoke(Context); });
             logger.LogInformation("After");
 
             // Assert
@@ -216,27 +213,7 @@ Response body
 
             // Act
             using var _ = TestCorrelator.CreateContext();
-            await handler.Invoke(Context, Enumerable.Empty<IHttpRequestPredicate>());
-
-            // Assert
-            List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
-            actual.Should().BeEmpty();
-        }
-
-        [Fact, Trait("Category", "Unit")]
-        public async Task RequestLoggingMiddleware_Invoke_NoneIfPredicateShouldSkip()
-        {
-            // Arrange
-            var provider = CreateServiceProvider(configuration => configuration.MinimumLevel.Verbose());
-            ILoggerFactory loggerFactory = provider.GetService<ILoggerFactory>();
-            EndpointPredicate predicate = new(exclude: true, patterns: new[] { "/master/*" });
-            RequestLoggingMiddlewareUnderTest handler = new(
-                next: async httpContext => await httpContext.Response.WriteAsync("Response body"),
-                loggerFactory);
-
-            // Act
-            using var _ = TestCorrelator.CreateContext();
-            await handler.Invoke(Context, new[] { predicate });
+            await handler.Invoke(Context);
 
             // Assert
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
@@ -279,7 +256,8 @@ Response body
                         factory,
                         new RequestLogger(new(null), new(null)),
                         new ResponseLogger(new(null), new(null)),
-                        new BasicInfoLogger()))
+                        new BasicInfoLogger(),
+                        Enumerable.Empty<IHttpRequestPredicate>()))
             {
             }
 
