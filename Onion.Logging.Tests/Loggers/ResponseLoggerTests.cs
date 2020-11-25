@@ -22,11 +22,11 @@ namespace Onion.Logging.Tests
         public async Task ResponseLogger_LogResponse_DoesNotWritesLogIfLevelIsNotSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, level, null!, null!);
+            await sut.LogResponse(loggerMock.Object, null!, null!);
 
             // Assert
             loggerMock.Verify(
@@ -45,12 +45,15 @@ namespace Onion.Logging.Tests
         public async Task ResponseLogger_LogResponse_WritesLogIfLevelIsSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             HttpContext context = new FakeHttpContextBuilder().Create();
+            Mock<IStopwatch> stopwatchMock = new();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             ResponseLogger sut = new(new(null), new(null));
-
+            
             // Act
-            await sut.LogResponse(loggerMock.Object, level, context.Request, context.Response);
+            await sut.LogResponse(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.Verify(
@@ -67,14 +70,17 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_DebugWritesOnlyStatusAndHeaders()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Debug);
             HttpContext context = new FakeHttpContextBuilder()
                 .SetResponseHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
                 .Create();
+            Mock<IStopwatch> stopwatchMock = new();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Debug, context.Request, context.Response);
+            await sut.LogResponse(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -87,16 +93,19 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_TraceWritesStatusAndHeadersAndBody()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Trace);
             HttpContext context = new FakeHttpContextBuilder()
                 .SetResponseBody("conflict response content")
                 .SetResponseHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
                 .SetStatus(HttpStatusCode.Conflict)
                 .Create();
+            Mock<IStopwatch> stopwatchMock = new();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             ResponseLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context.Request, context.Response);
+            await sut.LogResponse(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -111,13 +120,16 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_AppliesContentMiddleware()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Trace);
             Mock<IRequestContentLogMiddleware> contentMiddleware = new();
             var contentMiddlewares = new List<IRequestContentLogMiddleware> { contentMiddleware.Object };
             HttpContext context = new FakeHttpContextBuilder()
                 .SetResponseBody("response")
                 .SetResponseContentType("text/plain")
                 .Create();
+            Mock<IStopwatch> stopwatchMock = new();
+            var request = RequestDetails.From(context.Request);
+            var response = ResponseDetails.From(context.Response, stopwatchMock.Object);
             LogContentFactory contentFactory = new(contentMiddlewares);
             Stream modifiedContent = new MemoryStream(Encoding.UTF8.GetBytes("*modified*"));
             ResponseLogger sut = new(contentFactory, new(null));
@@ -132,7 +144,7 @@ namespace Onion.Logging.Tests
                 .Callback<Stream, Stream>((input, output) => modifiedContent.CopyTo(output));
 
             // Act
-            await sut.LogResponse(loggerMock.Object, LogLevel.Trace, context.Request, context.Response);
+            await sut.LogResponse(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -141,6 +153,16 @@ namespace Onion.Logging.Tests
                 $"{Environment.NewLine}" +
                 $"*modified*{Environment.NewLine}",
                 LogLevel.Trace);
+        }
+
+        private Mock<ILogger> CreateFor(LogLevel level)
+        {
+            Mock<ILogger> loggerMock = new();
+            loggerMock
+                .Setup(logger => logger.IsEnabled(level))
+                .Returns(true);
+
+            return loggerMock;
         }
     }
 }

@@ -25,7 +25,8 @@ namespace Onion.Logging
         /// Write request basic information log.
         /// </summary>
         /// <param name="stopwatch">Request execution performance watch state.</param>
-        void LogInfo(IStopwatch stopwatch);
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        Task LogInfo(IStopwatch stopwatch);
 
         /// <summary>
         /// Write request execution error log.

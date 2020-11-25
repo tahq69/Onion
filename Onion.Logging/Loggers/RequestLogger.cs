@@ -24,8 +24,9 @@ namespace Onion.Logging
         }
 
         /// <inheritdoc cref="IRequestLogger"/>
-        public async Task LogRequest(ILogger logger, LogLevel level, HttpRequest request)
+        public async Task LogRequest(ILogger logger, RequestDetails request)
         {
+            var level = logger.GetLogLevel();
             if (level > LogLevel.Debug)
             {
                 return;
@@ -42,9 +43,9 @@ namespace Onion.Logging
             logger.Log(level, text.ToString());
         }
 
-        private StringBuilder RequestHead(HttpRequest request)
+        private StringBuilder RequestHead(RequestDetails request)
         {
-            var text = $"{request.Method} {request.GetDisplayUrl()} {request.Protocol}{NewLine}";
+            var text = $"{request.Method} {request.Url} {request.Protocol}{NewLine}";
 
             StringBuilder builder = new(text);
             AppendHeaders(builder, request.Headers);
@@ -52,11 +53,9 @@ namespace Onion.Logging
             return builder;
         }
 
-        private Task<string> ReadBody(HttpRequest request)
+        private Task<string> ReadBody(RequestDetails request)
         {
-            request.EnableBuffering();
-
-            return ReadContent(request.ContentType, request.Body);
+            return ReadContent(request.ContentType, request.Content);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Onion.Logging
         public static void AddRequestLogging(this IServiceCollection services, IConfiguration config)
         {
             services.AddTransient<IContextLoggerFactory, ContextLoggerFactory>();
+            services.AddTransient<IHttpLoggerFactory, HttpLoggerFactory>();
             services.AddTransient<IRequestLogger, RequestLogger>();
             services.AddTransient<IResponseLogger, ResponseLogger>();
             services.AddTransient<IBasicInfoLogger, BasicInfoLogger>();

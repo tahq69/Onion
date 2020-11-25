@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.Extensions.Primitives;
 using Xunit;
 using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 
@@ -36,9 +38,12 @@ namespace Onion.Logging.Tests
                     Host = "localhost",
                     Path = "/api/v1",
                     QueryString = "?cat=1",
-                    Url = "http://localhost/api/v1?cat=1"
-                });
+                    Url = "http://localhost/api/v1?cat=1",
+                    Protocol = "HTTP/1.1",
+                    Headers = new Dictionary<string, StringValues> { { "Host", "localhost" } }
+                }, options => options.Excluding(r => r.Content));
         }
+
         [Fact, Trait("Category", "Unit")]
         public void RequestDetails_From_CreatesFromHttpRequestEmptyBasePath()
         {
@@ -63,8 +68,10 @@ namespace Onion.Logging.Tests
                     Host = "example.com",
                     Path = "/api/v2",
                     QueryString = "",
-                    Url = "https://example.com/api/v2"
-                });
+                    Url = "https://example.com/api/v2",
+                    Protocol = "HTTP/1.1",
+                    Headers = new Dictionary<string, StringValues> { { "Host", "example.com" } }
+                }, options => options.Excluding(r => r.Content));
         }
 
         [Fact, Trait("Category", "Unit")]
@@ -86,8 +93,10 @@ namespace Onion.Logging.Tests
                     Host = "localhost",
                     Path = "/api/v1",
                     QueryString = "?cat=1",
-                    Url = "http://localhost/api/v1?cat=1"
-                });
+                    Url = "http://localhost/api/v1?cat=1",
+                    Protocol = "HTTP/1.1",
+                    Headers = new Dictionary<string, StringValues>(),
+                }, options => options.Excluding(r => r.Content));
         }
     }
 }

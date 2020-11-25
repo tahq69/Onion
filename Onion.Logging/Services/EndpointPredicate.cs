@@ -33,19 +33,17 @@ namespace Onion.Logging
         }
 
         /// <inheritdoc/>
-        public bool Filter(HttpRequest req)
+        public bool Filter(RequestDetails request)
         {
-            if (req == null)
+            if (request == null)
             {
-                throw new ArgumentNullException(nameof(req));
+                throw new ArgumentNullException(nameof(request));
             }
 
-            string url = req.Path;
-            var matches = _expressions
-                .Select(i => i.IsMatch(url))
-                .Any(i => i);
+            string url = request.Path ?? string.Empty;
+            var hasMatch = _expressions.Any(i => i.IsMatch(url));
 
-            return (_exclude && !matches) || (!_exclude && matches);
+            return (_exclude && hasMatch) || (!_exclude && !hasMatch);
         }
     }
 }

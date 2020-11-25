@@ -18,7 +18,7 @@ namespace Onion.Logging.Tests
         public void BasicInfoLogger_LogBasicInfo_DoesNotWritesLogIfLevelIsNotSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             Mock<IStopwatch> stopwatchMock = new();
             HttpContext context = new FakeHttpContextBuilder().Create();
             var request = RequestDetails.From(context.Request);
@@ -26,12 +26,12 @@ namespace Onion.Logging.Tests
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, level, request, response);
+            sut.LogBasicInfo(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.Verify(
                 logger => logger.Log(
-                    It.IsAny<LogLevel>(),
+                    level,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => true),
                     It.IsAny<Exception>(),
@@ -46,7 +46,7 @@ namespace Onion.Logging.Tests
         public void BasicInfoLogger_LogBasicInfo_WritesLogIfLevelIsSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             Mock<IStopwatch> stopwatchMock = new();
             HttpContext context = new FakeHttpContextBuilder().Create();
             var request = RequestDetails.From(context.Request);
@@ -54,12 +54,12 @@ namespace Onion.Logging.Tests
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, level, request, response);
+            sut.LogBasicInfo(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.Verify(
                 logger => logger.Log(
-                    It.IsAny<LogLevel>(),
+                    LogLevel.Information,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => true),
                     It.IsAny<Exception>(),
@@ -71,7 +71,7 @@ namespace Onion.Logging.Tests
         public void BasicInfoLogger_LogBasicInfo_WritesSuccessfulPostRequestDetails()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Trace);
             Mock<IStopwatch> stopwatchMock = new();
             stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(2));
 
@@ -87,7 +87,7 @@ namespace Onion.Logging.Tests
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, LogLevel.Trace, request, response);
+            sut.LogBasicInfo(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
@@ -99,7 +99,7 @@ namespace Onion.Logging.Tests
         public void BasicInfoLogger_LogBasicInfo_WritesErrorPostRequestDetails()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Trace);
             Mock<IStopwatch> stopwatchMock = new();
             stopwatchMock.SetupGet(stopwatch => stopwatch.Elapsed).Returns(TimeSpan.FromSeconds(3));
 
@@ -118,12 +118,22 @@ namespace Onion.Logging.Tests
             BasicInfoLogger sut = new();
 
             // Act
-            sut.LogBasicInfo(loggerMock.Object, LogLevel.Debug, request, response);
+            sut.LogBasicInfo(loggerMock.Object, request, response);
 
             // Assert
             loggerMock.VerifyLogging(
                 "POST http://example.com/primary/secondary?cats=1 at 00:00:03:000 with 500 InternalServerError",
                 LogLevel.Information);
+        }
+
+        private Mock<ILogger> CreateFor(LogLevel level)
+        {
+            Mock<ILogger> loggerMock = new();
+            loggerMock
+                .Setup(logger => logger.IsEnabled(level))
+                .Returns(true);
+
+            return loggerMock;
         }
     }
 }

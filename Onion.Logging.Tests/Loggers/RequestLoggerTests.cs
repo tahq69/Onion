@@ -20,12 +20,12 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_DoesNotWritesLogIfLevelIsNotSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             HttpContext context = new FakeHttpContextBuilder().Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, level, context.Request);
+            await sut.LogRequest(loggerMock.Object, RequestDetails.From(context.Request));
 
             // Assert
             loggerMock.Verify(
@@ -44,12 +44,12 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_WritesLogIfLevelIsSufficient(LogLevel level)
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(level);
             HttpContext context = new FakeHttpContextBuilder().Create();
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, level, context.Request);
+            await sut.LogRequest(loggerMock.Object, RequestDetails.From(context.Request));
 
             // Assert
             loggerMock.Verify(
@@ -66,7 +66,7 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_DebugWritesOnlyUrlAndHeaders()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Debug);
             HttpContext context = new FakeHttpContextBuilder()
                 .SetRequest(
                     HttpMethod.Post,
@@ -77,7 +77,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context.Request);
+            await sut.LogRequest(loggerMock.Object, RequestDetails.From(context.Request));
 
             // Assert
             loggerMock.VerifyLogging(
@@ -91,7 +91,7 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_TraceWritesUrlAndHeadersAndBody()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Trace);
             HttpContext context = new FakeHttpContextBuilder()
                 .SetRequestBody("request content string")
                 .SetRequestHeaders(new() { { "foo", new(new[] { "bar", "baz" }) } })
@@ -104,7 +104,7 @@ namespace Onion.Logging.Tests
             RequestLogger sut = new(new(null), new(null));
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Trace, context.Request);
+            await sut.LogRequest(loggerMock.Object, RequestDetails.From(context.Request));
 
             // Assert
             loggerMock.VerifyLogging(
@@ -122,7 +122,7 @@ namespace Onion.Logging.Tests
         public async Task RequestLogger_LogRequest_AppliesHeaderMiddleware()
         {
             // Arrange
-            Mock<ILogger> loggerMock = new();
+            Mock<ILogger> loggerMock = CreateFor(LogLevel.Debug);
             Mock<IHeaderLogMiddleware> headerMiddlewareMock = new();
             var headerMiddlewares = new List<IHeaderLogMiddleware> { headerMiddlewareMock.Object };
             LogHeaderFactory headerFactory = new(headerMiddlewares);
@@ -142,7 +142,7 @@ namespace Onion.Logging.Tests
                 .Returns("*modified value*");
 
             // Act
-            await sut.LogRequest(loggerMock.Object, LogLevel.Debug, context.Request);
+            await sut.LogRequest(loggerMock.Object, RequestDetails.From(context.Request));
 
             // Assert
             loggerMock.VerifyLogging(
@@ -150,6 +150,16 @@ namespace Onion.Logging.Tests
                 $"Host: localhost{Environment.NewLine}" +
                 $"foo: *modified value*{Environment.NewLine}",
                 LogLevel.Debug);
+        }
+
+        private Mock<ILogger> CreateFor(LogLevel level)
+        {
+            Mock<ILogger> loggerMock = new();
+            loggerMock
+                .Setup(logger => logger.IsEnabled(level))
+                .Returns(true);
+
+            return loggerMock;
         }
     }
 }

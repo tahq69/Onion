@@ -8,9 +8,9 @@ namespace Onion.Logging
     public class BasicInfoLogger : IBasicInfoLogger
     {
         /// <inheritdoc cref="IBasicInfoLogger"/>
-        public void LogBasicInfo(ILogger logger, LogLevel level, RequestDetails request, ResponseDetails response)
+        public void LogBasicInfo(ILogger logger, RequestDetails request, ResponseDetails response)
         {
-            if (level > LogLevel.Information)
+            if (logger.GetLogLevel() > LogLevel.Information)
             {
                 return;
             }

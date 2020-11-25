@@ -24,8 +24,9 @@ namespace Onion.Logging
         }
 
         /// <inheritdoc cref="IResponseLogger"/>
-        public async Task LogResponse(ILogger logger, LogLevel level, HttpRequest request, HttpResponse response)
+        public async Task LogResponse(ILogger logger, RequestDetails request, ResponseDetails response)
         {
+            var level = logger.GetLogLevel();
             if (level > LogLevel.Debug)
             {
                 return;
@@ -41,14 +42,14 @@ namespace Onion.Logging
             logger.Log(level, text.ToString());
         }
 
-        private Task<string> ReadBody(HttpResponse response)
+        private Task<string> ReadBody(ResponseDetails response)
         {
-            return ReadContent(response.ContentType, response.Body);
+            return ReadContent(response.ContentType, response.Content);
         }
 
-        private StringBuilder ResponseHead(HttpRequest request, HttpResponse response)
+        private StringBuilder ResponseHead(RequestDetails request, ResponseDetails response)
         {
-            var status = $"{response.StatusCode} {(HttpStatusCode)response.StatusCode}";
+            var status = $"{(int)response.StatusCode} {response.StatusCode}";
             var text = new StringBuilder($"{request.Protocol} {status}{NewLine}");
 
             AppendHeaders(text, response.Headers);

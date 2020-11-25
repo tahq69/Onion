@@ -48,12 +48,12 @@ namespace Onion.Logging
         public async Task Invoke(HttpContext context)
         {
             var logger = _contextLoggerFactory.Create<RequestLoggingMiddleware>(context);
-            var level = logger.LogLevel;
             var stopwatch = CreateStopwatch();
             stopwatch.Start();
 
             try
             {
+                context.Request.EnableBuffering();
                 await logger.LogRequest();
 
                 Stream originalBodyStream = context.Response.Body;
@@ -84,7 +84,7 @@ namespace Onion.Logging
             }
             finally
             {
-                logger.LogInfo(stopwatch);
+                logger.LogInfo(stopwatch).Wait();
             }
         }
 

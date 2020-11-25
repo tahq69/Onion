@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Moq;
+using Moq.Language.Flow;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
@@ -196,7 +198,7 @@ Response body
             List<string> actual = TestCorrelator.GetLogEventsFromCurrentContext().Select(FormatLogEvent).ToList();
             actual.Should().BeEquivalentTo(
                 "Information: Before { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }",
-                "Error: Error during http request processing { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
+                "Error: Error during HTTP request processing { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: GET http://localhost/master/slave at 00:00:00:100 with 500 InternalServerError { SourceContext: \"Onion.Logging.RequestLoggingMiddleware.Fake\", EventName: \"HttpResponse\", StatusCode: 500, Elapsed: 100, Endpoint: \"http://localhost/master/slave\", HttpMethod: \"GET\" }",
                 "Information: After { SourceContext: \"Onion.Logging.RequestLoggingMiddleware\" }");
         }
@@ -250,20 +252,32 @@ Response body
         private class RequestLoggingMiddlewareUnderTest : RequestLoggingMiddleware
         {
             public RequestLoggingMiddlewareUnderTest(RequestDelegate next, ILoggerFactory factory)
-                : base(
-                    next,
-                    new ContextLoggerFactory(
-                        factory,
-                        new RequestLogger(new(null), new(null)),
-                        new ResponseLogger(new(null), new(null)),
-                        new BasicInfoLogger(),
-                        Enumerable.Empty<IHttpRequestPredicate>()))
+                : base(next, new ContextLoggerFactory(MockedServiceProvider(factory)))
             {
             }
 
             protected override IStopwatch CreateStopwatch()
             {
                 return new MockStopwatch(TimeSpan.FromMilliseconds(100));
+            }
+
+            private static IServiceProvider MockedServiceProvider(ILoggerFactory factory)
+            {
+                var serviceProviderMock = new Mock<IServiceProvider>();
+
+                Setup<IRequestLogger>(serviceProviderMock).Returns(new RequestLogger(new(null), new(null)));
+                Setup<IResponseLogger>(serviceProviderMock).Returns(new ResponseLogger(new(null), new(null)));
+                Setup<IBasicInfoLogger>(serviceProviderMock).Returns(new BasicInfoLogger());
+                Setup<IEnumerable<IHttpRequestPredicate>>(serviceProviderMock).Returns(Enumerable.Empty<IHttpRequestPredicate>());
+                Setup<ILoggerFactory>(serviceProviderMock).Returns(factory);
+                Setup<IHttpLoggerFactory>(serviceProviderMock).Returns(new HttpLoggerFactory(serviceProviderMock.Object));
+
+                return serviceProviderMock.Object;
+            }
+
+            private static ISetup<IServiceProvider, object> Setup<T>(Mock<IServiceProvider> mock)
+            {
+                return mock.Setup(serviceProvider => serviceProvider.GetService(typeof(T)));
             }
         }
     }
