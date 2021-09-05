@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Onion.Logging
 {
+    /// <summary>
+    /// HTTP request/response logger.
+    /// </summary>
     public class HttpLogger : IHttpLogger
     {
         private readonly ILogger _logger;
@@ -14,6 +18,14 @@ namespace Onion.Logging
         private readonly IBasicInfoLogger _basicInfoLogger;
         private readonly IEnumerable<IHttpRequestPredicate> _requestPredicates;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpLogger"/> class.
+        /// </summary>
+        /// <param name="logger">The actual log writer.</param>
+        /// <param name="requestLogger">The request logger.</param>
+        /// <param name="responseLogger">The response logger.</param>
+        /// <param name="basicInfoLogger">The basic information logger.</param>
+        /// <param name="requestPredicates">The request predicates to filter unneeded logs.</param>
         public HttpLogger(
             ILogger logger,
             IRequestLogger requestLogger,
@@ -28,6 +40,7 @@ namespace Onion.Logging
             _requestPredicates = requestPredicates;
         }
 
+        /// <inheritdoc />
         public async Task LogRequest(RequestDetails request)
         {
             if (ShouldSkip(request))
@@ -39,6 +52,7 @@ namespace Onion.Logging
             await _requestLogger.LogRequest(_logger, request);
         }
 
+        /// <inheritdoc />
         public async Task LogResponse(RequestDetails request, ResponseDetails response)
         {
             if (ShouldSkip(request))
@@ -51,6 +65,7 @@ namespace Onion.Logging
             await _responseLogger.LogResponse(_logger, request, response);
         }
 
+        /// <inheritdoc />
         public Task LogInfo(RequestDetails request, ResponseDetails response)
         {
             if (ShouldSkip(request))
@@ -66,6 +81,7 @@ namespace Onion.Logging
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public void LogError(
             Exception exception,
             RequestDetails? request,
@@ -80,8 +96,10 @@ namespace Onion.Logging
             _logger.LogError(exception, "Error during HTTP request processing");
         }
 
-        private IDisposable RequestScope(RequestDetails request)
+        private IDisposable RequestScope(RequestDetails? request)
         {
+            if (request is null) return Disposable.Empty;
+
             RequestScope scope = new(request.Url, request.Method);
 
             return _logger.BeginScope(scope);

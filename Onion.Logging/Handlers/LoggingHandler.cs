@@ -9,23 +9,25 @@ namespace Onion.Logging.Handlers
     /// <summary>
     /// HTTP client logging handler.
     /// </summary>
-    /// <typeparam name="T">The type of the client.</typeparam>
-    public class LoggingHandler<T> : LoggingHandler
+    public class LoggingHandler : DelegatingHandler
     {
-        private readonly ILogger<T> _logger;
         private readonly IHttpLogger _httpLogger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoggingHandler{T}"/> class.
+        /// Initializes a new instance of the <see cref="LoggingHandler"/> class.
         /// </summary>
-        public LoggingHandler(
-            ILogger<T> logger,
-            IHttpLogger httpLogger)
+        /// <param name="httpLogger">HTTP request logger instance.</param>
+        public LoggingHandler(IHttpLogger httpLogger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _httpLogger = httpLogger;
         }
 
+        /// <summary>
+        /// Send HTTP request asynchronously.
+        /// </summary>
+        /// <param name="request">The request message.</param>
+        /// <param name="ct">Request execution cancellation token.</param>
+        /// <returns>Executed request response message.</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
             var stopwatch = CreateStopwatch();
@@ -70,12 +72,5 @@ namespace Onion.Logging.Handlers
         {
             return new LoggingStopwatch();
         }
-    }
-
-    /// <summary>
-    /// Non generic logging handler abstraction.
-    /// </summary>
-    public abstract class LoggingHandler : DelegatingHandler
-    {
     }
 }
